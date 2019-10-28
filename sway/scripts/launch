@@ -1,0 +1,3 @@
+#!/bin/bash
+
+swaymsg -t command exec $(echo $PATH | awk 'BEGIN{RS=":"} {print}' | xargs ls | rg -v '/.*' | sort -u | $HOME/.fzf/bin/fzf)
