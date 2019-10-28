@@ -23,6 +23,9 @@ set $menu '~/launch'
 
 set $launcher gnome-terminal --hide-menubar -- $SHELL -c '~/launch'
 bindsym $mod+d exec $launcher
+bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5%
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5%
 # A bit hackish but should work as long as gnome-terminal is only used for the launcher
 for_window [app_id="^gnome-terminal-server$"] floating enable, border none
 
