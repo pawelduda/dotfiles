@@ -21,13 +21,24 @@ set $term alacritty
 # Note: it's recommended that you pass the final command to sway
 set $menu '~/launch'
 
-set $launcher gnome-terminal --hide-menubar -- $SHELL -c '~/launch'
+# set $launcher gnome-terminal --hide-menubar -- $SHELL -c '~/launch'
+set $launcher alacritty -t launcher --class launcher -e $SHELL -c '~/launch'
 bindsym $mod+d exec $launcher
+
 bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5%
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5%
+
+bindsym XF86MonBrightnessDown exec brightnessctl s 5%-
+bindsym XF86MonBrightnessUp exec  brightnessctl s +5%
+
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
 # A bit hackish but should work as long as gnome-terminal is only used for the launcher
 for_window [app_id="^gnome-terminal-server$"] floating enable, border none
+for_window [app_id="^launcher$"] floating enable, border none
 
 set $cl_high #009ddc
 set $cl_indi #d9d8d8
@@ -250,8 +261,13 @@ bar {
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
-    status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
-    # swaybar_command echo 'Hi dude'
+    status_command while \
+      echo 'Now playing: ' \
+      $(playerctl metadata title) \
+      ' - ' \
+      $(playerctl metadata artist) \
+      $(date +'%Y-%m-%d %l:%M:%S %p'); \
+    do sleep 1; done
 
     colors {
         statusline #ffffff
