@@ -5,13 +5,14 @@ set title
 "Removed in Neovim, keeping this for backwards compatibility
 set ttimeoutlen=100
 set ttyfast
-set lazyredraw
+" set lazyredraw
 set nocompatible
+set noshowmode
 
 "Scroll horizontally by 1 character instead of default half screen
-set sidescroll=1
+set sidescroll=5
 "Always show at least 1 line above/below the cursor while scrolling
-set scrolloff=1
+" set scrolloff=1
 
 "Move vertically by rows rather than lines (useful with long lines + wrap on)
 nnoremap j gj
@@ -39,6 +40,7 @@ autocmd VimEnter * set vb t_vb=
 set hidden
 set sessionoptions=resize,winpos,winsize,buffers,tabpages,
 set laststatus=2
+set showtabline=2
 
 "Disable swap files creation
 set noswapfile
@@ -105,25 +107,28 @@ Plug 'mbbill/undotree'
 " Plug 'Yggdroot/indentLine'
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 "Git integration:
-" Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
-Plug 'tpope/vim-vinegar'
 
 "Bottom bar:
-Plug 'bling/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+" Plug 'bling/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
+Plug 'mengelbrecht/lightline-bufferline'
+Plug 'shinchu/lightline-gruvbox.vim'
 
 "Syntax:
 " Plug 'w0rp/ale'
 " Plug 'scrooloose/syntastic'
 
 "Fuzzy search:
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'JazzCore/ctrlp-cmatcher'
+" Plug 'ctrlpvim/ctrlp.vim'
+" Plug 'JazzCore/ctrlp-cmatcher'
 
 "Autocomplete, snippets
 " Plug 'ervandew/supertab'
@@ -158,7 +163,7 @@ Plug 'tpope/vim-endwise'
 " Plug 'mattboehm/vim-accordion'
 
 "Rails
-Plug 'tpope/vim-rails'
+" Plug 'tpope/vim-rails'
 " Plug 'tpope/vim-bundler'
 " Plug 'tpope/vim-rake'
 
@@ -175,13 +180,13 @@ Plug 'lmeijvogel/vim-yaml-helper'
 " Plug 'pangloss/vim-javascript'
 " Plug 'isRuslan/vim-es6'
 " Plug 'kchmck/vim-coffee-script'
-Plug 'mxw/vim-jsx'
-Plug 'othree/yajs.vim'
-Plug 'moll/vim-node'
+" Plug 'mxw/vim-jsx'
+" Plug 'othree/yajs.vim'
+" Plug 'moll/vim-node'
 
 "TypeScript
 " Plug 'Shougo/vimproc.vim' "Async execution library, required by tsuquyomi
-" Plug 'leafgarland/typescript-vim'
+Plug 'leafgarland/typescript-vim'
 " Plug 'Quramy/tsuquyomi'
 
 "HTML
@@ -203,19 +208,30 @@ Plug 'shime/vim-livedown'
 Plug 'slashmili/alchemist.vim'
 Plug 'vimwiki/vimwiki'
 
-Plug 'ElmCast/elm-vim'
+ Plug 'ElmCast/elm-vim'
 
 " Plug 'MattesGroeger/vim-bookmarks'
 " Plug 'yuttie/comfortable-motion.vim'
 "
-Plug 'zxqfl/tabnine-vim'
+" Plug 'zxqfl/tabnine-vim'
 Plug 'prettier/vim-prettier'
 
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 
 Plug 'https://github.com/Alok/notational-fzf-vim'
-" Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install() }}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'fatih/vim-go'
+Plug 'yuki-ycino/fzf-preview.vim'
+Plug 'woelke/vim-nerdtree_plugin_open'
+Plug 'cohama/lexima.vim'
+
+Plug 'christoomey/vim-tmux-navigator'
+Plug '907th/vim-auto-save'
+Plug 'ryanoasis/vim-devicons'
+Plug 'francoiscabrol/ranger.vim'
+Plug 'morhetz/gruvbox'
+Plug 'psliwka/vim-smoothie'
 call plug#end()
 
 " let g:elixir_docpreview = 1
@@ -230,25 +246,27 @@ if (has("termguicolors"))
  set termguicolors
 endif
 syntax enable
-" set background=dark
-colorscheme OceanicNext
-highlight Normal ctermbg=none
-highlight NonText ctermbg=none
-highlight Normal guibg=none
-highlight NonText guibg=none
-highlight SignColumn ctermbg=none
-highlight SignColumn guibg=none
-highlight LineNr ctermbg=none
-highlight LineNr guibg=none
-highlight EndOfBuffer ctermbg=none
-highlight EndOfBuffer guibg=none
+set background=dark
+" colorscheme OceanicNext
+" highlight Normal ctermbg=none
+" highlight NonText ctermbg=none
+" highlight Normal guibg=none
+" highlight NonText guibg=none
+" highlight SignColumn ctermbg=none
+" highlight SignColumn guibg=none
+" highlight LineNr ctermbg=none
+" highlight LineNr guibg=none
+" highlight EndOfBuffer ctermbg=none
+" highlight EndOfBuffer guibg=none
 " highlight VertSplit ctermbg=none
 " highlight VertSplit guibg=none
 " colorscheme PaperColor
+colorscheme gruvbox
 
 set omnifunc=syntaxcomplete#Complete
 
 autocmd Filetype sass setlocal ts=2 sts=2 sw=2
+autocmd Filetype go setlocal tabstop=4 shiftwidth=4 softtabstop=4
 
 "TypeScript integration config
 let g:neomake_javascript_enabled_makers = ['eslint']
@@ -262,10 +280,12 @@ autocmd FileType typescript setlocal completeopt+=menu,preview
 let mapleader = ","
 
 "Use commands like this: ;w instead of :w
-nnoremap ; :
+" nnoremap : q:i
+" nnoremap ; q:i
 
 "Easymotion
 map <Leader> <Plug>(easymotion-prefix)
+nmap <Leader>l :NERDTreeFind<cr>:Bookmark<cr>
 " Require tpope/vim-repeat to enable dot repeat support
 " Jump to anywhere with only `s{char}{target}`
 " `s<CR>` repeat last find motion.
@@ -288,33 +308,42 @@ let g:easytags_async = 1
 
 " CtrlP
 " Use this function to prevent CtrlP opening files inside non-writeable buffers, e.g. NERDTree
-function! SwitchToWriteableBufferAndExec(command)
-    let c = 0
-    let wincount = winnr('$')
-    " Don't open it here if current buffer is not writable (e.g. NERDTree)
-    while !empty(getbufvar(+expand("<abuf>"), "&buftype")) && c < wincount
-        exec 'wincmd w'
-        let c = c + 1
-    endwhile
-    exec a:command
-endfunction
+" function! SwitchToWriteableBufferAndExec(command)
+"     let c = 0
+"     let wincount = winnr('$')
+"     " Don't open it here if current buffer is not writable (e.g. NERDTree)
+"     while !empty(getbufvar(+expand("<abuf>"), "&buftype")) && c < wincount
+"         exec 'wincmd w'
+"         let c = c + 1
+"     endwhile
+"     exec a:command
+" endfunction
+
+" nnoremap <C-p> :call SwitchToWriteableBufferAndExec('FzfPreviewDirectoryFiles')<CR>
+" nnoremap <C-l> :call SwitchToWriteableBufferAndExec('FzfPreviewMruFiles')<CR>
+
+nnoremap <C-p> :FzfPreviewDirectoryFiles<CR>
+nnoremap <C-l> :FzfPreviewMruFiles<CR>
+" nnoremap <C-k> :b#<CR>
+nnoremap <C-j> :bprevious<CR>
+nnoremap <C-k> :bnext<CR>
 
 " Disable default mapping since we are overriding it with our command
-let g:ctrlp_map = ''
-nnoremap <C-p> :call SwitchToWriteableBufferAndExec('CtrlP')<CR>
-nnoremap <C-l> :call SwitchToWriteableBufferAndExec('CtrlPMRUFiles')<CR>
+" let g:ctrlp_map = ''
+" nnoremap <C-p> :call SwitchToWriteableBufferAndExec('CtrlP')<CR>
+" nnoremap <C-l> :call SwitchToWriteableBufferAndExec('CtrlPMRUFiles')<CR>
 
 " Use ag over grep
-if executable('ag')
-    set grepprg=ag\ --nogroup\ --nocolor
-    " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-    " ag is fast enough that CtrlP doesn't need to cache
-    let g:ctrlp_use_caching = 0
-endif
+" if executable('ag')
+"     set grepprg=ag\ --nogroup\ --nocolor
+"     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+"     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+"     " ag is fast enough that CtrlP doesn't need to cache
+"     let g:ctrlp_use_caching = 0
+" endif
 
-" Use Ctrlp C matcher over ag for even more speed
-let g:ctrlp_match_func = { 'match' : 'matcher#cmatch' }
+" " Use Ctrlp C matcher over ag for even more speed
+" let g:ctrlp_match_func = { 'match' : 'matcher#cmatch' }
 
 
 " Show only MRU files in current working dir
@@ -326,7 +355,7 @@ let g:ctrlp_mruf_max = 20
 "airline fixes
 " let g:airline_theme='oceanicnext'
 " if !exists('g:airline_symbols')
-  " let g:airline_symbols = {}
+"   let g:airline_symbols = {}
 " endif
 " let g:airline_symbols.space = "\ua0"
 " let g:airline_left_sep = ''
@@ -336,10 +365,28 @@ let g:ctrlp_mruf_max = 20
 " let g:airline_symbols.branch = ''
 " let g:airline_symbols.readonly = ''
 " let g:airline_symbols.linenr = ''
+let g:lightline = {
+      \ 'colorscheme': 'gruvbox',
+      \ 'tabline': {
+      \   'left': [ ['buffers'] ],
+      \   'right': [ ]
+      \ },
+      \ 'component_expand': {
+      \   'buffers': 'lightline#bufferline#buffers'
+      \ },
+      \ 'component_type': {
+      \   'buffers': 'tabsel'
+      \ }
+      \ }
+let g:lightline#bufferline#enable_devicons = 1
+let g:lightline#bufferline#clickable = 1
+let g:lightline.component_raw = {'buffers': 1}
 
 " bind \ (backward slash) to grep shortcut
 command! -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
-nnoremap \ :Ag<SPACE>
+xnoremap \ y:Rg<SPACE><C-r>"<Enter>
+nnoremap \ :Rg<SPACE>
+nnoremap <C-_> :FzfPreviewLines<Enter>
 
 "NERDTree shortcut ,2
 " nnoremap <leader>2 <C-n> :NERDTreeToggle<CR>
@@ -364,9 +411,9 @@ set signcolumn=yes
 " let g:gitgutter_eager = 0
 " let g:gitgutter_grep_command = 'ag %s -l --nocolor -g ""'
 
-"I believe these settings (especially re=1) solved slow performance in mvim, I believe
+"I believe these settings (especially re=1) solved slow performance in mvim
 set nocursorcolumn
-set nocursorline
+set cursorline
 syntax sync minlines=256
 set synmaxcol=4000
 set re=1
@@ -375,16 +422,6 @@ let test#strategy = 'neoterm'
 
 "Exit terminal mode with esc
 :tnoremap <Esc> <C-\><C-n>"
-
-"Improve windows navigation by using 'alt + x' combination even when terminal window is active
-:tnoremap <A-h> <C-\><C-n><C-w>h
-:tnoremap <A-j> <C-\><C-n><C-w>j
-:tnoremap <A-k> <C-\><C-n><C-w>k
-:tnoremap <A-l> <C-\><C-n><C-w>l
-:nnoremap <A-h> <C-w>h
-:nnoremap <A-j> <C-w>j
-:nnoremap <A-k> <C-w>k
-:nnoremap <A-l> <C-w>l
 
 "Neomake on save
 autocmd! BufWritePost * Neomake
@@ -469,6 +506,73 @@ nnoremap * *``
 
 " The escape key is a long ways away. This maps it to the sequence 'kj'
 noremap! kj <esc>
-:inoremap <esc> <NOP>
+nnoremap <esc> :noh<Enter>
 
 let g:nv_search_paths = ['~/wiki', '~/writing', '~/code', 'docs.md' , './notes.md']
+
+" Vim-go settings
+let g:go_fmt_command = "goimports"
+let g:go_fmt_fail_silently = 1
+
+" autocmd StdinReadPre * let s:std_in=1
+" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
+let NERDTreeShowHidden = 1
+let NERDTreeShowBookmarks = 1
+let NERDTreeAutoDeleteBuffer = 1
+let NERDTreeHighlightCursorline = 0
+let NERDTreeDirArrowExpandable = ''
+let NERDTreeDirArrowCollapsible = ''
+autocmd BufEnter * :filetype detect
+
+let g:fzf_preview_command = 'batcat --theme=base16 --color=always --style=grid {-1}'
+let g:fzf_preview_directory_files_command = 'rg --files --hidden --follow --no-messages -g \!"* *"'
+let g:fzf_preview_grep_cmd = 'rg --line-number --no-heading'
+let g:fzf_preview_floating_window_rate = 0.9
+let g:fzf_preview_use_dev_icons = 0
+let g:fzf_preview_filelist_postprocess_command = 'xargs -d "\n" ls -U --color'
+
+noremap :W :w
+xmap S( S)
+
+let g:nerdtree_plugin_open_cmd = 'xdg-open'
+
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gr <Plug>(coc-references)
+
+" autocmd VimLeave * :CocCommand session.save `:pwd`
+" autocmd VimEnter * :CocCommand session.load dudev
+
+let g:tmux_navigator_no_mappings = 1
+" Disable tmux navigator when zooming the Vim pane
+let g:tmux_navigator_disable_when_zoomed = 1
+
+"Improve windows navigation by using 'alt + x' combination even when terminal window is active
+" :tnoremap <A-h> <C-\><C-n><C-w>h
+" :tnoremap <A-j> <C-\><C-n><C-w>j
+" :tnoremap <A-k> <C-\><C-n><C-w>k
+" :tnoremap <A-l> <C-\><C-n><C-w>l
+" :nnoremap <A-h> <C-w>h
+" :nnoremap <A-j> <C-w>j
+" :nnoremap <A-k> <C-w>k
+" :nnoremap <A-l> <C-w>l
+
+nnoremap <silent> <A-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <A-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <A-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <A-l> :TmuxNavigateRight<cr>
+" nnoremap <silent> {Previous-Mapping} :TmuxNavigatePrevious<cr>
+
+set updatetime=1000 " Affects cursorhold
+let g:auto_save_events = ["CursorHold"]
+let g:auto_save = 1
+" let g:auto_save_no_updatetime = 1
+
+set undofile " Maintain undo history between sessions
+set undodir=~/.vim/undodir
+let g:undotree_WindowLayout = 2
+let g:undotree_HighlightChangedWithSign = 0
+let g:undotree_HighlightChangedText = 0
+let g:undotree_DiffAutoOpen = 0
+let g:undotree_HelpLine = 0

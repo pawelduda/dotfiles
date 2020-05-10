@@ -2,6 +2,13 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM="xterm-256color"
 
+if [ "$TERM" = "xterm-256color" ]; then
+  xprop \
+    -id $(xdotool getactivewindow) \
+    -f _MOTIF_WM_HINTS 32c \
+    -set _MOTIF_WM_HINTS "0x2, 0x0, 0x0, 0x0, 0x0"
+fi
+
 # Path to your oh-my-zsh installation.
 export ZSH=/home/dudev/.oh-my-zsh
 
@@ -10,7 +17,8 @@ function manswitch() { man $1 | less -p "^ +$2"; }
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/ # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="powerlevel9k/powerlevel9k"
+# ZSH_THEME="powerlevel9k/powerlevel9k"
+ZSH_THEME="materialshell"
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time dir dir_writable vcs)
 # POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time custom_progress_bar ram dir dir_writable vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=()
@@ -127,7 +135,7 @@ export RESTIC_REPOSITORY='rclone:gdrive:/'
 [[ $TMUX = "" ]] && export TERM="xterm-256color"
 alias fd='fdfind --hidden --no-ignore-vcs --color=always'
 alias tmux="env TERM=xterm-256color tmux new-session \; split-window -h \; split-window -v"
-export EDITOR="TERM='' nvim"
+export EDITOR="TERM=''\ nvim"
 export ERL_AFLAGS="-kernel shell_history enabled"
 alias sudo='sudo '
 # alias n="TERM='' nvim"
@@ -159,7 +167,7 @@ alias dkcr='docker-compose run --rm'
 alias dkcrs='docker-compose run --rm --service-ports'
 
 # alias notwork?='~/prettyping onet.pl'
-alias cat='bat'
+alias cat='batcat'
 
 alias bouncer="ssh duda@bouncer.calltracks.com"
 alias paint="kolourpaint"
@@ -176,7 +184,7 @@ alias trello="$BROWSER https://trello.com"
 alias jira="$BROWSER 'https://calltracks.atlassian.net/secure/RapidBoard.jspa?rapidView=16&projectKey=OD'"
 alias en-pl="$BROWSER 'https://docs.google.com/spreadsheets/d/1DuI1tdArpFMLZBXbpOlRv3L0K_0EqIBnC2HJTAgpj-M/edit#gid=0'"
 alias buffer="$BROWSER 'https://www.notion.so/THE-BUFFER-bf94a5386ba1473886f77725340b4e71'"
-alias f='fzf -m --ansi --preview "bat --color=always {} | head -n 100"'
+alias f='fzf -m --ansi --preview "batcat --color=always {} | head -n 100"'
 alias fzf='fzf -m --ansi'
 
 function fzf-launch {
@@ -283,5 +291,8 @@ export CONFIG_SWITCHES_PATH=~/Programming/config-switches
 alias mute3='pactl set-sink-mute 3 1'
 alias unmute3='pactl set-sink-mute 3 0'
 alias subscribe-to-audio-events='pactl subscribe'
+
+export GOPATH=$HOME/Programming/golang
+export PATH=$PATH:$GOPATH/bin
 # alias mute-all=
 # alias unmute-all=
