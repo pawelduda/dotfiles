@@ -18,7 +18,8 @@ set sidescroll=5
 nnoremap j gj
 nnoremap k gk
 
-"Remove startup message set shortmess+=I
+set shortmess-=S
+set shortmess-=s
 "Mouse support
 set mouse=a
 
@@ -28,6 +29,7 @@ set timeoutlen=1000 ttimeoutlen=0
 set number
 " set relativenumber
 set norelativenumber
+set nocursorline
 
 set linebreak
 set nowrap
@@ -110,7 +112,7 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 "Git integration:
-Plug 'Xuyuanp/nerdtree-git-plugin'
+" Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
@@ -232,6 +234,7 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'francoiscabrol/ranger.vim'
 Plug 'morhetz/gruvbox'
 Plug 'psliwka/vim-smoothie'
+Plug 'ap/vim-you-keep-using-that-word'
 call plug#end()
 
 " let g:elixir_docpreview = 1
@@ -248,7 +251,6 @@ endif
 syntax enable
 set background=dark
 " colorscheme OceanicNext
-" highlight Normal ctermbg=none
 " highlight NonText ctermbg=none
 " highlight Normal guibg=none
 " highlight NonText guibg=none
@@ -322,11 +324,61 @@ let g:easytags_async = 1
 " nnoremap <C-p> :call SwitchToWriteableBufferAndExec('FzfPreviewDirectoryFiles')<CR>
 " nnoremap <C-l> :call SwitchToWriteableBufferAndExec('FzfPreviewMruFiles')<CR>
 
+
+
+augroup fzf_preview
+  autocmd!
+  autocmd User fzf_preview#initialized call s:fzf_preview_settings()
+augroup END
+
+function! s:fugitive_add(paths) abort
+  for path in a:paths
+    execute 'silent G add ' . path
+  endfor
+  echomsg 'Git add ' . join(a:paths, ', ')
+endfunction
+
+function! s:fugitive_reset(paths) abort
+  for path in a:paths
+    execute 'silent G reset ' . path
+  endfor
+  echomsg 'Git reset ' . join(a:paths, ', ')
+endfunction
+
+function! s:fugitive_patch(paths) abort
+  for path in a:paths
+    execute 'silent tabedit ' . path . ' | silent Gdiff'
+  endfor
+  echomsg 'Git add --patch ' . join(a:paths, ', ')
+endfunction
+
+function! s:buffers_delete_from_lines(lines) abort
+  for line in a:lines
+    let matches = matchlist(line, '^buffer \(\d\+\)$')
+    if len(matches) >= 1
+      execute 'bdelete! ' . matches[1]
+    else
+      execute 'bdelete! ' . line
+    endif
+  endfor
+endfunction
+
+function! s:fzf_preview_settings() abort
+  let g:fzf_preview_fugitive_processors = fzf_preview#resource_processor#get_processors()
+  let g:fzf_preview_fugitive_processors['ctrl-a'] = function('s:fugitive_add')
+  let g:fzf_preview_fugitive_processors['ctrl-r'] = function('s:fugitive_reset')
+  let g:fzf_preview_fugitive_processors['ctrl-c'] = function('s:fugitive_patch')
+
+  let g:fzf_preview_buffer_delete_processors = fzf_preview#resource_processor#get_default_processors()
+  let g:fzf_preview_buffer_delete_processors['ctrl-x'] = function('s:buffers_delete_from_lines')
+endfunction
+
+nnoremap <C-g> :FzfPreviewGitStatus -processors=g:fzf_preview_fugitive_processors<CR>
 nnoremap <C-p> :FzfPreviewDirectoryFiles<CR>
-nnoremap <C-l> :FzfPreviewMruFiles<CR>
-" nnoremap <C-k> :b#<CR>
-nnoremap <C-j> :bprevious<CR>
-nnoremap <C-k> :bnext<CR>
+nnoremap <C-l> :FzfPreviewMruFiles -add-fzf-arg=--no-sort<CR>
+nnoremap <C-j> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <C-k> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+nnoremap <C-u> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 
 " Disable default mapping since we are overriding it with our command
 " let g:ctrlp_map = ''
@@ -386,7 +438,9 @@ let g:lightline.component_raw = {'buffers': 1}
 command! -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
 xnoremap \ y:Rg<SPACE><C-r>"<Enter>
 nnoremap \ :Rg<SPACE>
-nnoremap <C-_> :FzfPreviewLines<Enter>
+nnoremap <C-_> :FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <C-Bslash> :FzfPreviewLines -add-fzf-arg=--no-sort<Enter>
+" nnoremap <C-Bslash> :FzfPreviewBufferLines<Enter>
 
 "NERDTree shortcut ,2
 " nnoremap <leader>2 <C-n> :NERDTreeToggle<CR>
@@ -431,6 +485,15 @@ if has('nvim')
   set clipboard+=unnamedplus
 endif
 
+" Paste from the register with the last yank instead (deleting doesn't override that register)
+" noremap p "0p
+" noremap P "0P
+" Preserve pasting behaviour for other registers
+" for s:i in ['"','*','+','-','.',':','%','/','=','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+    " execute 'noremap "'.s:i.'p "'.s:i.'p'
+    " execute 'noremap "'.s:i.'P "'.s:i.'P'
+" endfor
+
 "JS
 let g:jsx_ext_required = 0
 
@@ -462,8 +525,8 @@ let g:syntastic_python_checkers = []
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " Center screen on next/previous selection.
-nnoremap n nzz
-nnoremap N Nzz
+nmap n /<CR>zz
+nmap N ?<CR>zz
 " Last and next jump should center too.
 nnoremap <C-o> <C-o>zz
 nnoremap <C-i> <C-i>zz
@@ -529,9 +592,11 @@ autocmd BufEnter * :filetype detect
 let g:fzf_preview_command = 'batcat --theme=base16 --color=always --style=grid {-1}'
 let g:fzf_preview_directory_files_command = 'rg --files --hidden --follow --no-messages -g \!"* *"'
 let g:fzf_preview_grep_cmd = 'rg --line-number --no-heading'
+let g:fzf_preview_lines_command = "awk '{if (NF>0) print NR\" \"$0}'"
 let g:fzf_preview_floating_window_rate = 0.9
 let g:fzf_preview_use_dev_icons = 0
-let g:fzf_preview_filelist_postprocess_command = 'xargs -d "\n" ls -U --color'
+
+let g:webdevicons_enable_nerdtree = 0
 
 noremap :W :w
 xmap S( S)
@@ -545,6 +610,7 @@ nmap <silent> gr <Plug>(coc-references)
 " autocmd VimEnter * :CocCommand session.load dudev
 
 let g:tmux_navigator_no_mappings = 1
+let g:tmux_navigator_save_on_switch = 2
 " Disable tmux navigator when zooming the Vim pane
 let g:tmux_navigator_disable_when_zoomed = 1
 
