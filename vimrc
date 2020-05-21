@@ -9,6 +9,9 @@ set ttyfast
 set nocompatible
 set noshowmode
 
+:set listchars=eol:¬
+:set list
+
 "Scroll horizontally by 1 character instead of default half screen
 set sidescroll=5
 "Always show at least 1 line above/below the cursor while scrolling
@@ -106,7 +109,7 @@ Plug 'mhartington/oceanic-next'
 Plug 'sheerun/vim-polyglot'
 Plug 'mbbill/undotree'
 " Plug 'morhetz/gruvbox'
-" Plug 'Yggdroot/indentLine'
+Plug 'Yggdroot/indentLine'
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -149,7 +152,8 @@ Plug 'Shougo/echodoc.vim'
 "Comments:
 Plug 'tpope/vim-commentary'
 
-Plug 'bronson/vim-trailing-whitespace'
+Plug 'ntpeters/vim-better-whitespace'
+
 Plug 'terryma/vim-expand-region'
 Plug 'szw/vim-maximizer'
 "Automatic text alignment
@@ -231,10 +235,11 @@ Plug 'cohama/lexima.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug '907th/vim-auto-save'
 Plug 'ryanoasis/vim-devicons'
-Plug 'francoiscabrol/ranger.vim'
+" Plug 'francoiscabrol/ranger.vim'
 Plug 'morhetz/gruvbox'
 Plug 'psliwka/vim-smoothie'
 Plug 'ap/vim-you-keep-using-that-word'
+Plug 'rhysd/git-messenger.vim'
 call plug#end()
 
 " let g:elixir_docpreview = 1
@@ -243,13 +248,17 @@ call plug#end()
 let g:syntastic_enable_elixir_checker = 1
 
 filetype plugin indent on
+let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 if (has("termguicolors"))
  set termguicolors
 endif
 syntax enable
-set background=dark
+set background=light
+" set background=dark
+let g:gruvbox_contrast_dark = 'soft'
+let g:gruvbox_contrast_light = 'soft'
 " colorscheme OceanicNext
 " highlight NonText ctermbg=none
 " highlight Normal guibg=none
@@ -300,6 +309,12 @@ let g:EasyMotion_use_upper = 1
 let g:EasyMotion_smartcase = 1
 " Smartsign (type `3` and match `3`&`#`)
 let g:EasyMotion_use_smartsign_us = 1
+
+"Auto remove trailing whitespaces on save
+let g:better_whitespace_enabled=0
+let g:strip_whitespace_on_save=1
+let g:strip_whitespace_confirm=0
+let g:strip_only_modified_lines=1
 
 "Easytags
 "Async easytags
@@ -497,10 +512,6 @@ endif
 "JS
 let g:jsx_ext_required = 0
 
-Plug 'bronson/vim-trailing-whitespace'
-"Auto remove trailing whitespaces on save
-autocmd BufWritePre * FixWhitespace
-
 " check file change every 4 seconds ('CursorHold') and reload the buffer upon detecting change
 set autoread
 au CursorHold * checktime
@@ -642,3 +653,8 @@ let g:undotree_HighlightChangedWithSign = 0
 let g:undotree_HighlightChangedText = 0
 let g:undotree_DiffAutoOpen = 0
 let g:undotree_HelpLine = 0
+
+let g:git_messenger_include_diff = 'current'
+
+" Allow the . to execute once for each line of a visual selection
+vnoremap . :normal .<CR>
