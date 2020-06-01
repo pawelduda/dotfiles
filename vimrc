@@ -21,6 +21,10 @@ set sidescroll=5
 nnoremap j gj
 nnoremap k gk
 
+"Automatically indent pasted text
+nmap =p p`[v`]==
+nmap =P P`[v`]==
+
 set shortmess-=S
 set shortmess-=s
 "Mouse support
@@ -204,7 +208,7 @@ Plug 'kassio/neoterm'
 Plug 'benekastah/neomake'
 
 "Markdown
-Plug 'shime/vim-livedown'
+Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
 
 "Rust
 " Plug 'rust-lang/rust.vim'
@@ -240,6 +244,8 @@ Plug 'morhetz/gruvbox'
 Plug 'psliwka/vim-smoothie'
 Plug 'ap/vim-you-keep-using-that-word'
 Plug 'rhysd/git-messenger.vim'
+Plug 'rhysd/clever-f.vim'
+Plug 'jpalardy/vim-slime'
 call plug#end()
 
 " let g:elixir_docpreview = 1
@@ -247,7 +253,6 @@ call plug#end()
 " let g:elixir_autobuild = 1
 let g:syntastic_enable_elixir_checker = 1
 
-filetype plugin indent on
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
@@ -598,12 +603,14 @@ let NERDTreeAutoDeleteBuffer = 1
 let NERDTreeHighlightCursorline = 0
 let NERDTreeDirArrowExpandable = ''
 let NERDTreeDirArrowCollapsible = ''
-autocmd BufEnter * :filetype detect
+" Below is useful for autorefreshing syntax, etc. after renaming a file via NERDTree
+" But it completely slows down vim after few dozen buffer switches. Not worth it, gotta find another way.
+" autocmd BufEnter * :filetype detect
 
 let g:fzf_preview_command = 'batcat --theme=base16 --color=always --style=grid {-1}'
 let g:fzf_preview_directory_files_command = 'rg --files --hidden --follow --no-messages -g \!"* *"'
 let g:fzf_preview_grep_cmd = 'rg --line-number --no-heading'
-let g:fzf_preview_lines_command = "awk '{if (NF>0) print NR\" \"$0}'"
+let g:fzf_preview_lines_command = "awk '{if (NF>0) print NR, $0}'"
 let g:fzf_preview_floating_window_rate = 0.9
 let g:fzf_preview_use_dev_icons = 0
 
@@ -658,3 +665,13 @@ let g:git_messenger_include_diff = 'current'
 
 " Allow the . to execute once for each line of a visual selection
 vnoremap . :normal .<CR>
+
+let g:slime_target = 'tmux'
+let g:slime_dont_ask_default = 1
+let g:slime_default_config = {"socket_name": "default", "target_pane": "3"}
+
+function! SendRspecToTmux() abort
+  execute 'silent SlimeSend1 be spring rspec ' . expand('%:p') . ':' . line('.')
+endfunction
+
+nmap <Leader>r :call SendRspecToTmux()<CR>
