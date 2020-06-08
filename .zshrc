@@ -1,3 +1,6 @@
+# Don't ask whether to import .env file every time I change dir
+ZSH_DOTENV_PROMPT=false
+
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM="xterm-256color"
@@ -135,7 +138,8 @@ export RESTIC_REPOSITORY='rclone:gdrive:/'
 [[ $TMUX = "" ]] && export TERM="xterm-256color"
 alias fd='fdfind --hidden --no-ignore-vcs --color=always'
 alias tmux="env TERM=xterm-256color tmux new-session \; split-window -h \; split-window -v"
-export EDITOR="TERM=''\ nvim"
+# export EDITOR="TERM='' nvim"
+export EDITOR="nvim"
 export ERL_AFLAGS="-kernel shell_history enabled"
 alias sudo='sudo '
 # alias n="TERM='' nvim"
@@ -296,3 +300,6 @@ export GOPATH=$HOME/Programming/golang
 export PATH=$PATH:$GOPATH/bin
 # alias mute-all=
 # alias unmute-all=
+
+export MANPAGER="nvim +Man! -c ':set signcolumn='"
+

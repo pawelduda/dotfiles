@@ -443,6 +443,9 @@ let g:lightline = {
       \   'left': [ ['buffers'] ],
       \   'right': [ ]
       \ },
+      \ 'component_function': {
+      \   'filename': 'LightlineFilename'
+      \ },
       \ 'component_expand': {
       \   'buffers': 'lightline#bufferline#buffers'
       \ },
@@ -453,6 +456,15 @@ let g:lightline = {
 let g:lightline#bufferline#enable_devicons = 1
 let g:lightline#bufferline#clickable = 1
 let g:lightline.component_raw = {'buffers': 1}
+
+function! LightlineFilename()
+  let root = fnamemodify(get(b:, 'git_dir'), ':h')
+  let path = expand('%:p')
+  if path[:len(root)-1] ==# root
+    return path[len(root)+1:]
+  endif
+  return expand('%')
+endfunction
 
 " bind \ (backward slash) to grep shortcut
 command! -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
@@ -675,3 +687,6 @@ function! SendRspecToTmux() abort
 endfunction
 
 nmap <Leader>r :call SendRspecToTmux()<CR>
+
+" Annoying folding, no need for it
+let g:polyglot_disabled = ['markdown']
