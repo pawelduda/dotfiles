@@ -226,8 +226,8 @@ Plug 'vimwiki/vimwiki'
 " Plug 'zxqfl/tabnine-vim'
 Plug 'prettier/vim-prettier'
 
-Plug 'leafgarland/typescript-vim'
-Plug 'peitalin/vim-jsx-typescript'
+" Plug 'leafgarland/typescript-vim'
+" Plug 'peitalin/vim-jsx-typescript'
 
 Plug 'https://github.com/Alok/notational-fzf-vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}

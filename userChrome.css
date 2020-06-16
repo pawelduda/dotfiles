@@ -1,0 +1,23 @@
+/* https://github.com/piroor/treestyletab/wiki/Code-snippets-for-custom-style-rules#hovered-tab */
+
+/* hides the native tabs */
+#TabsToolbar {
+  visibility: collapse;
+}
+
+/* hide sidebar header */
+#sidebar-box[sidebarcommand="treestyletab_piro_sakura_ne_jp-sidebar-action"] #sidebar-header {
+  display: none;
+}
+
+/* auto-hide sidebar when fullscreen */
+#main-window[inFullscreen] #sidebar-box,
+#main-window[inFullscreen] #sidebar-splitter {
+  display: none !important;
+  width: 0px !important;
+}
+
+/* decrease min-width of the sidebar */
+#sidebar {
+  min-width: 100px !important;
+}
