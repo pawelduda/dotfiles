@@ -114,6 +114,9 @@ Plug 'sheerun/vim-polyglot'
 Plug 'mbbill/undotree'
 " Plug 'morhetz/gruvbox'
 Plug 'Yggdroot/indentLine'
+Plug 'lukas-reineke/indent-blankline.nvim'
+
+Plug 'pechorin/any-jump.vim'
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -246,6 +249,7 @@ Plug 'ap/vim-you-keep-using-that-word'
 Plug 'rhysd/git-messenger.vim'
 Plug 'rhysd/clever-f.vim'
 Plug 'jpalardy/vim-slime'
+
 call plug#end()
 
 " let g:elixir_docpreview = 1
@@ -301,7 +305,8 @@ let mapleader = ","
 
 "Easymotion
 map <Leader> <Plug>(easymotion-prefix)
-nmap <Leader>l :NERDTreeFind<cr>:Bookmark<cr>
+" nmap <Leader>l :NERDTreeFind<cr>:Bookmark<cr>
+nmap <Leader>n :NERDTreeFind<cr>:Bookmark<cr>
 " Require tpope/vim-repeat to enable dot repeat support
 " Jump to anywhere with only `s{char}{target}`
 " `s<CR>` repeat last find motion.
@@ -346,59 +351,59 @@ let g:easytags_async = 1
 
 
 
-augroup fzf_preview
-  autocmd!
-  autocmd User fzf_preview#initialized call s:fzf_preview_settings()
-augroup END
+" augroup fzf_preview
+"   autocmd!
+"   autocmd User fzf_preview#initialized call s:fzf_preview_settings()
+" augroup END
 
-function! s:fugitive_add(paths) abort
-  for path in a:paths
-    execute 'silent G add ' . path
-  endfor
-  echomsg 'Git add ' . join(a:paths, ', ')
-endfunction
+" function! s:fugitive_add(paths) abort
+"   for path in a:paths
+"     execute 'silent G add ' . path
+"   endfor
+"   echomsg 'Git add ' . join(a:paths, ', ')
+" endfunction
 
-function! s:fugitive_reset(paths) abort
-  for path in a:paths
-    execute 'silent G reset ' . path
-  endfor
-  echomsg 'Git reset ' . join(a:paths, ', ')
-endfunction
+" function! s:fugitive_reset(paths) abort
+"   for path in a:paths
+"     execute 'silent G reset ' . path
+"   endfor
+"   echomsg 'Git reset ' . join(a:paths, ', ')
+" endfunction
 
-function! s:fugitive_patch(paths) abort
-  for path in a:paths
-    execute 'silent tabedit ' . path . ' | silent Gdiff'
-  endfor
-  echomsg 'Git add --patch ' . join(a:paths, ', ')
-endfunction
+" function! s:fugitive_patch(paths) abort
+"   for path in a:paths
+"     execute 'silent tabedit ' . path . ' | silent Gdiff'
+"   endfor
+"   echomsg 'Git add --patch ' . join(a:paths, ', ')
+" endfunction
 
-function! s:buffers_delete_from_lines(lines) abort
-  for line in a:lines
-    let matches = matchlist(line, '^buffer \(\d\+\)$')
-    if len(matches) >= 1
-      execute 'bdelete! ' . matches[1]
-    else
-      execute 'bdelete! ' . line
-    endif
-  endfor
-endfunction
+" function! s:buffers_delete_from_lines(lines) abort
+"   for line in a:lines
+"     let matches = matchlist(line, '^buffer \(\d\+\)$')
+"     if len(matches) >= 1
+"       execute 'bdelete! ' . matches[1]
+"     else
+"       execute 'bdelete! ' . line
+"     endif
+"   endfor
+" endfunction
 
-function! s:fzf_preview_settings() abort
-  let g:fzf_preview_fugitive_processors = fzf_preview#resource_processor#get_processors()
-  let g:fzf_preview_fugitive_processors['ctrl-a'] = function('s:fugitive_add')
-  let g:fzf_preview_fugitive_processors['ctrl-r'] = function('s:fugitive_reset')
-  let g:fzf_preview_fugitive_processors['ctrl-c'] = function('s:fugitive_patch')
+" function! s:fzf_preview_settings() abort
+"   let g:fzf_preview_fugitive_processors = fzf_preview#resource_processor#get_processors()
+"   let g:fzf_preview_fugitive_processors['ctrl-a'] = function('s:fugitive_add')
+"   let g:fzf_preview_fugitive_processors['ctrl-r'] = function('s:fugitive_reset')
+"   let g:fzf_preview_fugitive_processors['ctrl-c'] = function('s:fugitive_patch')
 
-  let g:fzf_preview_buffer_delete_processors = fzf_preview#resource_processor#get_default_processors()
-  let g:fzf_preview_buffer_delete_processors['ctrl-x'] = function('s:buffers_delete_from_lines')
-endfunction
+"   let g:fzf_preview_buffer_delete_processors = fzf_preview#resource_processor#get_default_processors()
+"   let g:fzf_preview_buffer_delete_processors['ctrl-x'] = function('s:buffers_delete_from_lines')
+" endfunction
 
-nnoremap <C-g> :FzfPreviewGitStatus -processors=g:fzf_preview_fugitive_processors<CR>
+" nnoremap <C-g> :FzfPreviewGitStatus -processors=g:fzf_preview_fugitive_processors<CR>
 nnoremap <C-p> :FzfPreviewDirectoryFiles<CR>
 nnoremap <C-l> :FzfPreviewMruFiles -add-fzf-arg=--no-sort<CR>
-nnoremap <C-j> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
-nnoremap <C-k> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
-nnoremap <C-u> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+" nnoremap <C-j> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+" nnoremap <C-k> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
+" nnoremap <C-u> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 
 " Disable default mapping since we are overriding it with our command
 " let g:ctrlp_map = ''
@@ -468,8 +473,38 @@ endfunction
 
 " bind \ (backward slash) to grep shortcut
 command! -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
-xnoremap \ y:Rg<SPACE><C-r>"<Enter>
+
+let g:any_jump_grouping_enabled = 1
+let g:any_jump_list_numbers = 1
+let g:any_jump_remove_comments_from_results = 0
+let g:any_jump_results_ui_style = 'filename_last'
+let g:any_jump_colors = {
+      \"plain_text":         "Comment",
+      \"preview":            "Comment",
+      \"preview_keyword":    "Operator",
+      \"heading_text":       "Function",
+      \"heading_keyword":    "Identifier",
+      \"group_text":         "Comment",
+      \"group_name":         "Function",
+      \"more_button":        "Operator",
+      \"more_explain":       "Comment",
+      \"result_line_number": "Comment",
+      \"result_text":        "Statement",
+      \"result_path":        "String",
+      \"help":               "Comment"
+      \}
+
+" Default: <leader>al
+nnoremap <leader>l :AnyJumpLastResults<CR>
+
 nnoremap \ :Rg<SPACE>
+" Default: <leader>j
+nnoremap <leader>m :AnyJump<CR>
+
+xnoremap \ y:Rg<SPACE><C-r>"<CR>
+" Default: <leader>j
+xnoremap <leader>m :AnyJumpVisual<CR>
+
 nnoremap <C-_> :FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
 nnoremap <C-Bslash> :FzfPreviewLines -add-fzf-arg=--no-sort<Enter>
 " nnoremap <C-Bslash> :FzfPreviewBufferLines<Enter>
@@ -490,8 +525,14 @@ nnoremap <C-Bslash> :FzfPreviewLines -add-fzf-arg=--no-sort<Enter>
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 
 
-"Gitgutter
-set signcolumn=yes
+" Gitgutter
+set signcolumn=auto
+
+let g:gitgutter_preview_win_floating = 1
+let g:gitgutter_grep = 'rg'
+
+nnoremap <leader>gg :GitGutterPreviewHunk<CR>
+
 "Uncomment two lines below in case of performance issues
 " let g:gitgutter_realtime = 0
 " let g:gitgutter_eager = 0
@@ -680,13 +721,15 @@ vnoremap . :normal .<CR>
 
 let g:slime_target = 'tmux'
 let g:slime_dont_ask_default = 1
-let g:slime_default_config = {"socket_name": "default", "target_pane": "3"}
+" let g:slime_default_config = {"socket_name": "default", "target_pane": "3"}
+let g:slime_default_config = {"socket_name": "default", "target_pane": "5"}
 
 function! SendRspecToTmux() abort
   execute 'silent SlimeSend1 be spring rspec ' . expand('%:p') . ':' . line('.')
+  " execute 'silent SlimeSend1 be rspec ' . expand('%:p') . ':' . line('.')
 endfunction
 
 nmap <Leader>r :call SendRspecToTmux()<CR>
 
 " Annoying folding, no need for it
-let g:polyglot_disabled = ['markdown']
+let g:polyglot_disabled = ['markdown', 'typescript.tsx']
