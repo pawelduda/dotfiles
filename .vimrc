@@ -49,7 +49,7 @@ autocmd VimEnter * set vb t_vb=
 set hidden
 set sessionoptions=resize,winpos,winsize,buffers,tabpages,
 set laststatus=2
-set showtabline=2
+set showtabline=0
 
 "Disable swap files creation
 set noswapfile
@@ -131,7 +131,7 @@ Plug 'tpope/vim-rhubarb'
 " Plug 'bling/vim-airline'
 " Plug 'vim-airline/vim-airline-themes'
 Plug 'itchyny/lightline.vim'
-Plug 'mengelbrecht/lightline-bufferline'
+" Plug 'mengelbrecht/lightline-bufferline'
 Plug 'shinchu/lightline-gruvbox.vim'
 
 "Syntax:
@@ -444,23 +444,13 @@ let g:ctrlp_mruf_max = 20
 " let g:airline_symbols.linenr = ''
 let g:lightline = {
       \ 'colorscheme': 'gruvbox',
-      \ 'tabline': {
-      \   'left': [ ['buffers'] ],
-      \   'right': [ ]
-      \ },
       \ 'component_function': {
       \   'filename': 'LightlineFilename'
       \ },
-      \ 'component_expand': {
-      \   'buffers': 'lightline#bufferline#buffers'
-      \ },
-      \ 'component_type': {
-      \   'buffers': 'tabsel'
       \ }
-      \ }
-let g:lightline#bufferline#enable_devicons = 1
-let g:lightline#bufferline#clickable = 1
-let g:lightline.component_raw = {'buffers': 1}
+" let g:lightline#bufferline#enable_devicons = 1
+" let g:lightline#bufferline#clickable = 1
+" let g:lightline.component_raw = {'buffers': 1}
 
 function! LightlineFilename()
   let root = fnamemodify(get(b:, 'git_dir'), ':h')
@@ -731,5 +721,9 @@ endfunction
 
 nmap <Leader>r :call SendRspecToTmux()<CR>
 
-" Annoying folding, no need for it
-let g:polyglot_disabled = ['markdown', 'typescript.tsx']
+" Performance issues, disable this
+let g:polyglot_disabled = ['typescript.tsx', 'markdown']
+
+" Annoying folding, I don't need a wannabe WYSIWYG in Vim -.-
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_conceal = 0
