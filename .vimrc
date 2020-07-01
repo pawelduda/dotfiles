@@ -727,3 +727,5 @@ let g:polyglot_disabled = ['typescript.tsx', 'markdown']
 " Annoying folding, I don't need a wannabe WYSIWYG in Vim -.-
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal = 0
+
+autocmd VimResized * exe "normal \<c-w>="
