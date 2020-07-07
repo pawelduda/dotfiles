@@ -70,5 +70,7 @@
     "complete": "sbh"
   },
   "blacklist": [
+    "fastmail.com",
+    "www.fastmail.com"
   ]
 }

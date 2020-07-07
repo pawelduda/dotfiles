@@ -249,6 +249,7 @@ Plug 'ap/vim-you-keep-using-that-word'
 Plug 'rhysd/git-messenger.vim'
 Plug 'rhysd/clever-f.vim'
 Plug 'jpalardy/vim-slime'
+" Plug 'DanilaMihailov/beacon.nvim'
 
 call plug#end()
 
