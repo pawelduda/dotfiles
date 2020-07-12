@@ -250,6 +250,10 @@ Plug 'rhysd/git-messenger.vim'
 Plug 'rhysd/clever-f.vim'
 Plug 'jpalardy/vim-slime'
 " Plug 'DanilaMihailov/beacon.nvim'
+"
+
+Plug 'camspiers/animate.vim'
+Plug 'camspiers/lens.vim'
 
 call plug#end()
 
