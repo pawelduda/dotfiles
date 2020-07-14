@@ -252,8 +252,8 @@ Plug 'jpalardy/vim-slime'
 " Plug 'DanilaMihailov/beacon.nvim'
 "
 
-Plug 'camspiers/animate.vim'
-Plug 'camspiers/lens.vim'
+" Plug 'camspiers/animate.vim'
+" Plug 'camspiers/lens.vim'
 
 call plug#end()
 
@@ -405,6 +405,7 @@ let g:easytags_async = 1
 
 " nnoremap <C-g> :FzfPreviewGitStatus -processors=g:fzf_preview_fugitive_processors<CR>
 nnoremap <C-p> :FzfPreviewDirectoryFiles<CR>
+" nnoremap <C-l> :FzfPreviewMruFiles -add-fzf-arg=--no-sort<CR>
 nnoremap <C-l> :FzfPreviewMruFiles -add-fzf-arg=--no-sort<CR>
 " nnoremap <C-j> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 " nnoremap <C-k> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>

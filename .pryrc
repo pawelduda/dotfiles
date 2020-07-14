@@ -6,8 +6,11 @@ end
 require "rb-readline"
 require "readline" if defined?("RbReadline")
 
+# No need for the shell functionality, it breaks pasting multiline code with leading dots
+Pry.commands.delete(/\.(.*)/)
+
 def RbReadline.rl_reverse_search_history(sign, key)
-  rl_insert_text `cat ~/.pry_history | fzf --no-sort --height 15 --tac |  tr '\n' ' '`
+  rl_insert_text `cat ~/.pry_history | fzf --multi --no-sort --height 15 --tac | perl -pi -e 'chomp if eof'`
 end
 
 def benchmark_time(repetitions = 100, &block)
