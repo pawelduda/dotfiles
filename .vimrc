@@ -404,9 +404,11 @@ let g:easytags_async = 1
 " endfunction
 
 " nnoremap <C-g> :FzfPreviewGitStatus -processors=g:fzf_preview_fugitive_processors<CR>
-nnoremap <C-p> :FzfPreviewDirectoryFiles<CR>
+" nnoremap <C-p> :FzfPreviewDirectoryFiles<CR>
+nnoremap <C-p> :CocCommand fzf-preview.DirectoryFiles<CR>
 " nnoremap <C-l> :FzfPreviewMruFiles -add-fzf-arg=--no-sort<CR>
-nnoremap <C-l> :FzfPreviewMruFiles -add-fzf-arg=--no-sort<CR>
+" nnoremap <C-l> :CocCommand fzf-preview.MruFiles -add-fzf-arg=--no-sort<CR>
+nnoremap <C-l> :CocCommand fzf-preview.ProjectMruFiles -add-fzf-arg=--no-sort<CR>
 " nnoremap <C-j> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 " nnoremap <C-k> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
 " nnoremap <C-u> :FzfPreviewBuffers -processors=g:fzf_preview_buffer_delete_processors<CR>
@@ -501,8 +503,8 @@ xnoremap \ y:Rg<SPACE><C-r>"<CR>
 " Default: <leader>j
 xnoremap <leader>m :AnyJumpVisual<CR>
 
-nnoremap <C-_> :FzfPreviewLines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <C-Bslash> :FzfPreviewLines -add-fzf-arg=--no-sort<Enter>
+nnoremap <C-_> :CocCommand fzf-preview.Lines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap <C-Bslash> :CocCommand fzf-preview.Lines -add-fzf-arg=--no-sort<Enter>
 " nnoremap <C-Bslash> :FzfPreviewBufferLines<Enter>
 
 "NERDTree shortcut ,2
@@ -735,3 +737,6 @@ let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal = 0
 
 autocmd VimResized * exe "normal \<c-w>="
+
+let g:instant_markdown_autostart = 0
+let g:instant_markdown_browser = "firefox"
