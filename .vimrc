@@ -219,7 +219,7 @@ Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
 "Elixir
 " Plug 'elixir-lang/vim-elixir'
 Plug 'slashmili/alchemist.vim'
-Plug 'vimwiki/vimwiki'
+" Plug 'vimwiki/vimwiki'
 
  Plug 'ElmCast/elm-vim'
 
@@ -251,9 +251,10 @@ Plug 'rhysd/clever-f.vim'
 Plug 'jpalardy/vim-slime'
 " Plug 'DanilaMihailov/beacon.nvim'
 "
-
 " Plug 'camspiers/animate.vim'
 " Plug 'camspiers/lens.vim'
+Plug 'liuchengxu/vim-which-key'
+" Plug 'justinmk/vim-sneak'
 
 call plug#end()
 
@@ -308,22 +309,33 @@ let mapleader = ","
 " nnoremap : q:i
 " nnoremap ; q:i
 
-"Easymotion
-map <Leader> <Plug>(easymotion-prefix)
-" nmap <Leader>l :NERDTreeFind<cr>:Bookmark<cr>
-nmap <Leader>n :NERDTreeFind<cr>:Bookmark<cr>
+" Easymotion
+let g:EasyMotion_do_mapping = 0
+let g:EasyMotion_smartcase = 1
+
+map  <Leader>f <Plug>(easymotion-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+map  <Leader>w <Plug>(easymotion-bd-w)
+nmap <Leader>w <Plug>(easymotion-overwin-w)
+
+
+" nmap s <Plug>(easymotion-s)
+" omap t <Plug>(easymotion-bd-tl)
 " Require tpope/vim-repeat to enable dot repeat support
 " Jump to anywhere with only `s{char}{target}`
 " `s<CR>` repeat last find motion.
-nmap s <Plug>(easymotion-s)
 " Bidirectional & within line 't' motion
-" omap t <Plug>(easymotion-bd-tl)
 " Use uppercase target labels and type as a lower case
-let g:EasyMotion_use_upper = 1
+" let g:EasyMotion_use_upper = 1
  " type `l` and match `l`&`L`
-let g:EasyMotion_smartcase = 1
+" let g:EasyMotion_smartcase = 1
 " Smartsign (type `3` and match `3`&`#`)
-let g:EasyMotion_use_smartsign_us = 1
+" let g:EasyMotion_use_smartsign_us = 1
+
+" nmap <Leader>l :NERDTreeFind<cr>:Bookmark<cr>
+" nmap <Leader>n :NERDTreeFind<cr>:Bookmark<cr>
+nmap <Leader>n :NERDTreeFind<cr>
 
 "Auto remove trailing whitespaces on save
 let g:better_whitespace_enabled=0

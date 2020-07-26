@@ -90,8 +90,11 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(colored-man-pages git zsh-autosuggestions alias-tips z zsh-syntax-highlighting dotenv web-search emoji)
+# plugins=(colored-man-pages git zsh-autosuggestions alias-tips z zsh-syntax-highlighting dotenv web-search emoji)
+plugins=(colored-man-pages git zsh-autosuggestions alias-tips z fast-syntax-highlighting dotenv web-search emoji)
 
+typeset -A FAST_HIGHLIGHT
+FAST_HIGHLIGHT[git-cmsg-len]=72
 # User configuration
 
 export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
@@ -136,7 +139,7 @@ export PATH="/usr/local/heroku/bin:$PATH"
 export RESTIC_REPOSITORY='rclone:gdrive:/'
 
 [[ $TMUX = "" ]] && export TERM="xterm-256color"
-alias fd='fdfind --hidden --no-ignore-vcs --color=always'
+alias fdfind='fdfind --hidden --no-ignore-vcs --color=always'
 alias tmux="env TERM=xterm-256color tmux new-session \; split-window -h \; split-window -v"
 # export EDITOR="TERM='' nvim"
 export EDITOR="nvim"
@@ -151,6 +154,7 @@ alias rake="bundle exec rake"
 alias vim_diesel="TERM='' nvim"
 alias vim="TERM='' nvim"
 alias n="TERM='' nvim"
+alias s="spring"
 alias xit="exit"
 alias x="exit"
 # alias :q="exit"
@@ -188,36 +192,41 @@ alias trello="$BROWSER https://trello.com"
 alias jira="$BROWSER 'https://calltracks.atlassian.net/secure/RapidBoard.jspa?rapidView=16&projectKey=OD'"
 alias en-pl="$BROWSER 'https://docs.google.com/spreadsheets/d/1DuI1tdArpFMLZBXbpOlRv3L0K_0EqIBnC2HJTAgpj-M/edit#gid=0'"
 alias buffer="$BROWSER 'https://www.notion.so/THE-BUFFER-bf94a5386ba1473886f77725340b4e71'"
-alias f='fzf -m --ansi --preview "batcat --color=always {} | head -n 100"'
-alias fzf='fzf -m --ansi'
+# alias f='fzf -m --ansi --preview "batcat --color=always {} | head -n 100"'
+alias f='fzf'
+alias fzf='fzf -m --ansi --height 90% --layout=reverse --preview "batcat --color=always {} | head -n 100"'
 
 function fzf-launch {
   while [[ "$#" -gt 0 ]]
   do
     case $1 in
       -f|--cmd)
-        local CMD="$2"
+        if [ -z $1 ]; then
+          local CMD='xdg-open'
+        else
+          local CMD="$2"
+        fi
         ;;
       -t|--filetype)
         local FILETYPE="$2"
-        ;;
     esac
     shift
   done
 
-  # $CMD \
-  xdg-open \
+  $($($CMD) \
     $( \
       rg \
         ~/ \
-        --files | \
+        --files \
+        2> /dev/null | \
           fzf \
             -m \
-            # -q ".$FILETYPE\$ " \
+            -q ".$FILETYPE\$ " \
             --cycle \
             --prompt='Open anything' \
-            --history='.fzf-launch-history'
-    )
+            --history='.fzf-launch-history' \
+    ) \
+  )
 }
 alias '/any'='fzf-launch'
 
@@ -244,7 +253,8 @@ fi
 # export FZF_DEFAULT_COMMAND='ag -g ""'
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
 # export FZF_DEFAULT_COMMAND='rg'
-export FZF_ALT_C_COMMAND='fd --type d .'
+# export FZF_ALT_C_COMMAND='fdfind --type d .'
+export FZF_ALT_C_COMMAND='fzf-launch'
 
 # To apply the command to CTRL-T as well
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
