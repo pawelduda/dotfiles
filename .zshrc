@@ -181,43 +181,48 @@ alias pihole-admin="$BROWSER http://192.168.0.137/admin"
 alias trello="$BROWSER https://trello.com"
 alias en-pl="$BROWSER 'https://docs.google.com/spreadsheets/d/1DuI1tdArpFMLZBXbpOlRv3L0K_0EqIBnC2HJTAgpj-M/edit#gid=0'"
 alias buffer="$BROWSER 'https://www.notion.so/THE-BUFFER-bf94a5386ba1473886f77725340b4e71'"
-# alias f='fzf -m --ansi --preview "batcat --color=always {} | head -n 100"'
 alias f='fzf'
 alias fzf='fzf -m --ansi --height 90% --layout=reverse --preview "batcat --color=always {} | head -n 100"'
 
 function fzf-launch {
+  local CMD='xdg-open'
+
   while [[ "$#" -gt 0 ]]
   do
     case $1 in
       -f|--cmd)
-        if [ -z $1 ]; then
-          local CMD='xdg-open'
-        else
-          local CMD="$2"
+        if [ -n $2 ]; then
+          CMD="$2"
         fi
         ;;
       -t|--filetype)
         local FILETYPE="$2"
+
+        if [ $FILETYPE != "" ]; then
+          local INITIAL_QUERY=".$FILETYPE\$"
+        else
+          local INITIAL_QUERY=""
+        fi
     esac
     shift
   done
 
-  $($($CMD) \
-    $( \
-      rg \
-        ~/ \
-        --files \
-        2> /dev/null | \
-          fzf \
-            -m \
-            -q ".$FILETYPE\$ " \
-            --cycle \
-            --prompt='Open anything' \
-            --history='.fzf-launch-history' \
-    ) \
+  local FILE=$( \
+    rg \
+      ~/ \
+      --files \
+      2> /dev/null | \
+        fzf \
+          -m \
+          -q "$INITIAL_QUERY" \
+          --cycle \
+          --prompt="Open anything with $CMD: " \
+          --history='.fzf-launch-history' \
   )
+
+  $CMD $FILE
 }
-alias '/any'='fzf-launch'
+alias fl='fzf-launch'
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -241,9 +246,8 @@ fi
 # Setting ag as the default source for fzf
 # export FZF_DEFAULT_COMMAND='ag -g ""'
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
-# export FZF_DEFAULT_COMMAND='rg'
-# export FZF_ALT_C_COMMAND='fdfind --type d .'
-export FZF_ALT_C_COMMAND='fzf-launch'
+export FZF_DEFAULT_COMMAND='rg'
+export FZF_ALT_C_COMMAND='fdfind --type d .'
 
 # To apply the command to CTRL-T as well
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
