@@ -168,16 +168,9 @@ alias dt="cd ~/Desktop"
 alias pbcopy='xclip -selection clipboard'
 alias pbpaste='xclip -selection clipboard -o'
 
-# SOBO aliases alias dkc='docker-compose'
-alias dm='docker-machine'
-alias dkckill='docker kill $(docker ps -q)'
-alias dkcr='docker-compose run --rm'
-alias dkcrs='docker-compose run --rm --service-ports'
-
 # alias notwork?='~/prettyping onet.pl'
 alias cat='batcat'
 
-alias bouncer="ssh duda@bouncer.calltracks.com"
 alias paint="kolourpaint"
 alias rga='/home/dudev/.asdf/installs/rust/1.35.0/bin/rga'
 alias svgbob='/home/dudev/.asdf/installs/rust/1.35.0/bin/svgbob'
@@ -185,11 +178,7 @@ alias ag='rg'
 
 export BROWSER=firefox
 alias pihole-admin="$BROWSER http://192.168.0.137/admin"
-alias worklog="$BROWSER https://docs.google.com/spreadsheets/d/1y3S8iqiF5PF9nVh4ODfqGyOMnUS-31FXlzl17SRzaVA/edit#gid=671000088; $BROWSER https://dashboard.selleo.com/"
-alias fb="$BROWSER https://facebook.com"
-alias hn="$BROWSER https://news.ycombinator.com"
 alias trello="$BROWSER https://trello.com"
-alias jira="$BROWSER 'https://calltracks.atlassian.net/secure/RapidBoard.jspa?rapidView=16&projectKey=OD'"
 alias en-pl="$BROWSER 'https://docs.google.com/spreadsheets/d/1DuI1tdArpFMLZBXbpOlRv3L0K_0EqIBnC2HJTAgpj-M/edit#gid=0'"
 alias buffer="$BROWSER 'https://www.notion.so/THE-BUFFER-bf94a5386ba1473886f77725340b4e71'"
 # alias f='fzf -m --ansi --preview "batcat --color=always {} | head -n 100"'
