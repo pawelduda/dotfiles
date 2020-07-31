@@ -255,6 +255,7 @@ Plug 'jpalardy/vim-slime'
 " Plug 'camspiers/lens.vim'
 Plug 'liuchengxu/vim-which-key'
 " Plug 'justinmk/vim-sneak'
+Plug 'takac/vim-hardtime'
 
 call plug#end()
 
@@ -319,6 +320,7 @@ nmap <Leader>f <Plug>(easymotion-overwin-f)
 map  <Leader>w <Plug>(easymotion-bd-w)
 nmap <Leader>w <Plug>(easymotion-overwin-w)
 
+nmap <Leader>e <Plug>(easymotion-overwin-line)
 
 " nmap s <Plug>(easymotion-s)
 " omap t <Plug>(easymotion-bd-tl)
@@ -754,3 +756,7 @@ autocmd VimResized * exe "normal \<c-w>="
 
 let g:instant_markdown_autostart = 0
 let g:instant_markdown_browser = "firefox"
+
+let g:sneak#label = 1
+
+let g:hardtime_default_on = 1
