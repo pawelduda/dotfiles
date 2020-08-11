@@ -101,7 +101,7 @@ set inccommand=nosplit
 call plug#begin('~/.vim/plugged')
 "General:
 Plug 'xolox/vim-misc'
-Plug 'xolox/vim-easytags'
+" Plug 'ludovicchabant/vim-gutentags'
 Plug 'easymotion/vim-easymotion'
 Plug 'scrooloose/nerdtree'
 Plug 'NLKNguyen/papercolor-theme'
@@ -255,7 +255,7 @@ Plug 'jpalardy/vim-slime'
 " Plug 'camspiers/lens.vim'
 Plug 'liuchengxu/vim-which-key'
 " Plug 'justinmk/vim-sneak'
-Plug 'takac/vim-hardtime'
+" Plug 'takac/vim-hardtime'
 
 call plug#end()
 
@@ -347,7 +347,7 @@ let g:strip_only_modified_lines=1
 
 "Easytags
 "Async easytags
-let g:easytags_async = 1
+" let g:easytags_async = 1
 "Create tags files per working directory
 " let g:easytags_dynamic_files = 2
 " set cpoptions+=d
@@ -760,3 +760,6 @@ let g:instant_markdown_browser = "firefox"
 let g:sneak#label = 1
 
 let g:hardtime_default_on = 1
+
+
+set textwidth=0 wrapmargin=0
