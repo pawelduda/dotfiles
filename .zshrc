@@ -185,6 +185,8 @@ alias en-pl="$BROWSER 'https://docs.google.com/spreadsheets/d/1DuI1tdArpFMLZBXbp
 alias buffer="$BROWSER 'https://www.notion.so/THE-BUFFER-bf94a5386ba1473886f77725340b4e71'"
 alias f='fzf'
 alias fzf='fzf -m --ansi --height 90% --layout=reverse --preview "batcat --color=always {} | head -n 100"'
+alias apti='sudo apt install'
+alias phone='adb connect 192.168.0.106:5555; scrcpy -S'
 
 function fzf-launch {
   local CMD='xdg-open'
@@ -253,7 +255,7 @@ export FZF_ALT_C_COMMAND='fdfind --type d .'
 
 # To apply the command to CTRL-T as well
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export QT_QPA_PLATFORM='wayland'
+# export QT_QPA_PLATFORM='wayland'
 
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
@@ -291,7 +293,7 @@ alias vpn='expressvpn status'
 # alias launch='history | fzf -q test --preview="which {}" | awk "{print $2}" | xargs -r swaymsg -t command exec'
 alias launch='./launch'
 alias q=launch
-export SDL_VIDEODRIVER=wayland
+# export SDL_VIDEODRIVER=wayland
 alias toggle-laptop='./toggle-laptop'
 alias toggle-laptop-screen-rotation='./toggle-laptop-screen-rotation'
 
