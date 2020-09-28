@@ -186,7 +186,7 @@ alias buffer="$BROWSER 'https://www.notion.so/THE-BUFFER-bf94a5386ba1473886f7772
 alias f='fzf'
 alias fzf='fzf -m --ansi --height 90% --layout=reverse --preview "batcat --color=always {} | head -n 100"'
 alias apti='sudo apt install'
-alias phone='adb connect 192.168.0.106:5555; scrcpy -S'
+alias phone='adb connect 192.168.0.106:5555; scrcpy -S & disown'
 
 function fzf-launch {
   local CMD='xdg-open'
