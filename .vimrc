@@ -59,9 +59,9 @@ set splitright
 set splitbelow
 
 "Encoding:
-" set langmenu=en_US.UTF-8
-" set encoding=utf-8
-" set fileencoding=utf-8
+set langmenu=en_US.UTF-8
+set encoding=utf-8
+set fileencoding=utf-8
 
 "Search:
 "Highlight search matches
@@ -101,7 +101,6 @@ set inccommand=nosplit
 call plug#begin('~/.vim/plugged')
 "General:
 Plug 'xolox/vim-misc'
-" Plug 'ludovicchabant/vim-gutentags'
 Plug 'easymotion/vim-easymotion'
 Plug 'scrooloose/nerdtree'
 Plug 'NLKNguyen/papercolor-theme'
@@ -210,6 +209,8 @@ Plug 'janko-m/vim-test'
 Plug 'kassio/neoterm'
 Plug 'benekastah/neomake'
 
+Plug 'skywind3000/asyncrun.vim'
+
 "Markdown
 Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
 
@@ -257,6 +258,9 @@ Plug 'liuchengxu/vim-which-key'
 " Plug 'justinmk/vim-sneak'
 " Plug 'takac/vim-hardtime'
 
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+
+" Plug 'nvim-treesitter/nvim-treesitter'
 call plug#end()
 
 " let g:elixir_docpreview = 1
@@ -270,7 +274,7 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 if (has("termguicolors"))
  set termguicolors
 endif
-syntax enable
+" syntax enable
 set background=light
 " set background=dark
 let g:gruvbox_contrast_dark = 'soft'
@@ -518,10 +522,10 @@ xnoremap \ y:Rg<SPACE><C-r>"<CR>
 xnoremap <leader>m :AnyJumpVisual<CR>
 
 " nnoremap <C-_> :CocCommand fzf-preview.Lines -add-fzf-arg=--no-sort -add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap <C-_> :CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+" nnoremap <C-_> :CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
 " TODO: find good hotkey for this: nnoremap <C-.> :CocCommand fzf-preview.BufferLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
 " nnoremap <C-Bslash> :CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort<Enter>
-nnoremap <C-Bslash> :CocCommand fzf-preview.BufferLines<Enter>
+" nnoremap <C-Bslash> :CocCommand fzf-preview.BufferLines<Enter>
 
 "NERDTree shortcut ,2
 " nnoremap <leader>2 <C-n> :NERDTreeToggle<CR>
@@ -761,5 +765,53 @@ let g:sneak#label = 1
 
 let g:hardtime_default_on = 1
 
-
 set textwidth=0 wrapmargin=0
+
+let g:firenvim_config = {
+    \ 'globalSettings': {
+        \ 'alt': 'all',
+    \  },
+    \ 'localSettings': {
+        \ '.*': {
+            \ 'cmdline': 'neovim',
+            \ 'priority': 0,
+            \ 'selector': 'textarea',
+            \ 'takeover': 'never',
+        \ },
+    \ }
+\ }
+
+" Join line above
+nnoremap K kJ
+
+" lua <<EOF
+" require'nvim-treesitter.configs'.setup {
+"   ensure_installed = "all",     -- one of "all", "language", or a list of languages
+"   highlight = {
+"     enable = true,              -- false will disable the whole extension
+"     disable = {},  -- list of language that will be disabled
+"   },
+"   highlight = {
+"     enable = true,
+"   },
+"   incremental_selection = {
+"     enable = true,
+"     keymaps = {
+"       init_selection = "gnn",
+"       node_incremental = "grn",
+"       scope_incremental = "grc",
+"       node_decremental = "grm",
+"     },
+"   },
+" }
+" EOF
+"
+
+function! RefreshRubyTags()
+  if (g:asyncrun_status != 'running')
+    call asyncrun#run("", "{ 'mode': 'term', 'pos': 'hide', 'silent': 1 }", "ripper-tags -R")
+  end
+endfunction
+
+autocmd BufWritePost *.rb call RefreshRubyTags()
+
