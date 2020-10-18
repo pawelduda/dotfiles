@@ -3,14 +3,15 @@ ZSH_DOTENV_PROMPT=false
 
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-export TERM="xterm-256color"
+export TERM="xterm-kitty"
+# export TERM="xterm-256color"
 
-if [ "$TERM" = "xterm-256color" ]; then
-  xprop \
-    -id $(xdotool getactivewindow) \
-    -f _MOTIF_WM_HINTS 32c \
-    -set _MOTIF_WM_HINTS "0x2, 0x0, 0x0, 0x0, 0x0"
-fi
+# if [ "$TERM" = "xterm-256color" ]; then
+#   xprop \
+#     -id $(xdotool getactivewindow) \
+#     -f _MOTIF_WM_HINTS 32c \
+#     -set _MOTIF_WM_HINTS "0x2, 0x0, 0x0, 0x0, 0x0"
+# fi
 
 # Path to your oh-my-zsh installation.
 export ZSH=/home/dudev/.oh-my-zsh
@@ -91,13 +92,16 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 # plugins=(colored-man-pages git zsh-autosuggestions alias-tips z zsh-syntax-highlighting dotenv web-search emoji)
-plugins=(colored-man-pages git zsh-autosuggestions alias-tips z fast-syntax-highlighting dotenv web-search emoji)
+plugins=(
+  colored-man-pages git zsh-autosuggestions alias-tips z fast-syntax-highlighting dotenv web-search emoji fzf-tab
+  zsh-completions
+)
 
 typeset -A FAST_HIGHLIGHT
 FAST_HIGHLIGHT[git-cmsg-len]=72
 # User configuration
 
-export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games/:/home/$USER/.cargo/bin"
 
 source $ZSH/oh-my-zsh.sh
 
@@ -138,7 +142,8 @@ export PATH="/usr/local/heroku/bin:$PATH"
 
 export RESTIC_REPOSITORY='rclone:gdrive:/'
 
-[[ $TMUX = "" ]] && export TERM="xterm-256color"
+# [[ $TMUX = "" ]] && export TERM="xterm-256color"
+[[ $TMUX = "" ]] && export TERM="xterm-kitty"
 alias fdfind='fdfind --hidden --no-ignore-vcs --color=always'
 alias tmux="env TERM=xterm-256color tmux new-session \; split-window -h \; split-window -v"
 # export EDITOR="TERM='' nvim"
@@ -235,6 +240,9 @@ alias nf='TERM="" nvim -o `fzf`'
 alias gs='#gs'
 alias ls='lsd'
 alias gestures='sudo libinput-gestures'
+alias glog=glol
+
+alias icat="kitty +kitten icat --clear"
 
 # === fzf ===
 
@@ -309,5 +317,29 @@ export PATH=$PATH:$GOPATH/bin
 # alias mute-all=
 # alias unmute-all=
 
-export MANPAGER="nvim +Man! -c ':set signcolumn='"
+# export MANPAGER="nvim +Man! -c ':set signcolumn='"
 
+local extract="
+# trim input(what you select)
+local in=\${\${\"\$(<{f})\"%\$'\0'*}#*\$'\0'}
+# get ctxt for current completion(some thing before or after the current word)
+local -A ctxt=(\"\${(@ps:\2:)CTXT}\")
+# real path
+local realpath=\${ctxt[IPREFIX]}\${ctxt[hpre]}\$in
+realpath=\${(Qe)~realpath}
+"
+
+zstyle ':fzf-tab:complete:cd:*' extra-opts --preview=$extract'lsd -l --color="always" $realpath'
+FZF_TAB_COMMAND=(
+    fzf
+    --ansi   # Enable ANSI color support, necessary for showing groups
+    --expect='$continuous_trigger,$print_query' # For continuous completion and print query
+    '--color=hl:$(( $#headers == 0 ? 108 : 255 ))'
+    --nth=2,3 --delimiter='\x00'  # Don't search prefix
+    --layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
+    --tiebreak=begin -m --bind=tab:toggle+down,btab:up,change:top,ctrl-space:toggle --cycle
+    '--query=$query'   # $query will be expanded to query string at runtime.
+    '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
+    --print-query
+)
+zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
