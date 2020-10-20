@@ -261,6 +261,8 @@ Plug 'liuchengxu/vim-which-key'
 Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 
 " Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'francoiscabrol/ranger.vim'
+Plug 'rbgrouleff/bclose.vim'
 call plug#end()
 
 " let g:elixir_docpreview = 1
