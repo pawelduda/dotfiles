@@ -263,6 +263,9 @@ Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 " Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'francoiscabrol/ranger.vim'
 Plug 'rbgrouleff/bclose.vim'
+" Plug 'romgrk/nvim-treesitter-context'
+" Plug 'wfxr/minimap.vim', {'do': ':!cargo install --locked code-minimap'}
+" Plug 'Xuyuanp/scrollbar.nvim'
 call plug#end()
 
 " let g:elixir_docpreview = 1
@@ -703,7 +706,7 @@ nmap <silent> gr <Plug>(coc-references)
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 2
 " Disable tmux navigator when zooming the Vim pane
-let g:tmux_navigator_disable_when_zoomed = 1
+let g:tmux_navigator_disable_when_zoomed = 0
 
 "Improve windows navigation by using 'alt + x' combination even when terminal window is active
 " :tnoremap <A-h> <C-\><C-n><C-w>h
@@ -719,6 +722,7 @@ nnoremap <silent> <A-h> :TmuxNavigateLeft<cr>
 nnoremap <silent> <A-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <A-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <A-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <A-a> :TmuxNavigatePrevious<cr>
 " nnoremap <silent> {Previous-Mapping} :TmuxNavigatePrevious<cr>
 
 set updatetime=1000 " Affects cursorhold
@@ -815,5 +819,32 @@ function! RefreshRubyTags()
   end
 endfunction
 
-autocmd BufWritePost *.rb call RefreshRubyTags()
+" autocmd BufWritePost *.rb call RefreshRubyTags()
 
+let g:ranger_map_keys = 0
+nmap - :Ranger<CR>
+
+function! WriteRoomToggle()
+  let l:name = '_writeroom_'
+  if bufwinnr(l:name) > 0
+    wincmd o
+  else
+    let l:width = (&columns - &textwidth) / 5
+    execute 'topleft' l:width . 'vsplit +setlocal\ nobuflisted' l:name | wincmd p
+    execute 'botright' l:width . 'vsplit +setlocal\ nobuflisted' l:name | wincmd p
+    endif
+endfunction
+
+map <silent><Leader>v :call WriteRoomToggle()<CR>
+
+" let g:minimap_auto_start = 1
+" "" TODO: reuse theme
+" hi MinimapCurrentLine ctermfg=Green guifg=#076678 guibg=#ebdbb2
+" let g:minimap_highlight = 'MinimapCurrentLine'
+
+" augroup ScrollbarInit
+"   autocmd!
+"   autocmd CursorMoved,VimResized,QuitPre * silent! lua require('scrollbar').show()
+"   autocmd WinEnter,FocusGained           * silent! lua require('scrollbar').show()
+"   autocmd WinLeave,FocusLost             * silent! lua require('scrollbar').clear()
+" augroup end
