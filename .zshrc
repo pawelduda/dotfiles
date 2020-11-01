@@ -243,6 +243,7 @@ alias gestures='sudo libinput-gestures'
 alias glog=glol
 
 alias icat="kitty +kitten icat --clear"
+alias rr=ranger
 
 # === fzf ===
 
