@@ -89,7 +89,7 @@ timing = True
 # ascii, double, github, orgtbl, rst, mediawiki, html, latex, latex_booktabs,
 # textile, moinmoin, jira, vertical, tsv, csv.
 # Recommended: psql, fancy_grid and grid.
-table_format = psql
+# table_format = psql
 
 # Syntax Style. Possible values: manni, igor, xcode, vim, autumn, vs, rrt,
 # native, perldoc, borland, tango, emacs, friendly, monokai, paraiso-dark,
@@ -135,6 +135,10 @@ multiline_continuation_char = ''
 
 # The string used in place of a null value.
 null_string = '<null>'
+
+# Use pspg pager
+pager = /usr/bin/pspg --csv --rr=2 -s 16 --quit-if-one-screen --ignore-case --csv-header on
+table_format = csv
 
 # manage pager on startup
 enable_pager = True

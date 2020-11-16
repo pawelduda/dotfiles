@@ -244,6 +244,7 @@ alias glog=glol
 
 alias icat="kitty +kitten icat --clear"
 alias rr=ranger
+alias psql=pgcli
 
 # === fzf ===
 
