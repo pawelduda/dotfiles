@@ -102,7 +102,7 @@ call plug#begin('~/.vim/plugged')
 "General:
 Plug 'xolox/vim-misc'
 Plug 'easymotion/vim-easymotion'
-Plug 'scrooloose/nerdtree'
+" Plug 'scrooloose/nerdtree'
 Plug 'NLKNguyen/papercolor-theme'
 
 Plug 'tpope/vim-surround'
@@ -237,7 +237,7 @@ Plug 'https://github.com/Alok/notational-fzf-vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'fatih/vim-go'
 Plug 'yuki-ycino/fzf-preview.vim'
-Plug 'woelke/vim-nerdtree_plugin_open'
+" Plug 'woelke/vim-nerdtree_plugin_open'
 Plug 'cohama/lexima.vim'
 
 Plug 'christoomey/vim-tmux-navigator'
@@ -346,7 +346,7 @@ nmap <Leader>e <Plug>(easymotion-overwin-line)
 
 " nmap <Leader>l :NERDTreeFind<cr>:Bookmark<cr>
 " nmap <Leader>n :NERDTreeFind<cr>:Bookmark<cr>
-nmap <Leader>n :NERDTreeFind<cr>
+" nmap <Leader>n :NERDTreeFind<cr>
 
 "Auto remove trailing whitespaces on save
 let g:better_whitespace_enabled=0
