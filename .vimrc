@@ -97,6 +97,9 @@ set backspace=indent,eol,start
 "Live preview of Ex commands
 set inccommand=nosplit
 
+" Performance issues, disable this
+let g:polyglot_disabled = ['typescript.tsx', 'markdown']
+
 "Plugins:
 call plug#begin('~/.vim/plugged')
 "General:
@@ -532,6 +535,8 @@ xnoremap <leader>m :AnyJumpVisual<CR>
 " nnoremap <C-Bslash> :CocCommand fzf-preview.Lines --add-fzf-arg=--no-sort<Enter>
 " nnoremap <C-Bslash> :CocCommand fzf-preview.BufferLines<Enter>
 
+call coc#config('git.addGBlameToVirtualText', v:true)
+
 "NERDTree shortcut ,2
 " nnoremap <leader>2 <C-n> :NERDTreeToggle<CR>
 "Autostart NERDTree
@@ -571,7 +576,7 @@ set re=1
 let test#strategy = 'neoterm'
 
 "Exit terminal mode with esc
-:tnoremap <Esc> <C-\><C-n>"
+" :tnoremap <Esc> <C-\><C-n>"
 
 "Neomake on save
 autocmd! BufWritePost * Neomake
@@ -755,8 +760,6 @@ endfunction
 
 nmap <Leader>r :call SendRspecToTmux()<CR>
 
-" Performance issues, disable this
-let g:polyglot_disabled = ['typescript.tsx', 'markdown']
 
 " Annoying folding, I don't need a wannabe WYSIWYG in Vim -.-
 let g:vim_markdown_folding_disabled = 1

@@ -346,3 +346,6 @@ FZF_TAB_COMMAND=(
     --print-query
 )
 zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /home/dudev/.asdf/installs/terraform/0.13.5/bin/terraform terraform
