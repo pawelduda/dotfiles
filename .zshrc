@@ -146,6 +146,7 @@ export RESTIC_REPOSITORY='rclone:gdrive:/'
 [[ $TMUX = "" ]] && export TERM="xterm-kitty"
 alias fdfind='fdfind --hidden --no-ignore-vcs --color=always'
 alias tmux="env TERM=xterm-256color tmux new-session \; split-window -h \; split-window -v"
+alias ssh="TERM=xterm-256color ssh"
 # export EDITOR="TERM='' nvim"
 export EDITOR="nvim"
 export ERL_AFLAGS="-kernel shell_history enabled"
@@ -180,7 +181,6 @@ alias pbpaste='xclip -selection clipboard -o'
 alias cat='batcat'
 
 alias paint="kolourpaint"
-alias rga='/home/dudev/.asdf/installs/rust/1.35.0/bin/rga'
 alias svgbob='/home/dudev/.asdf/installs/rust/1.35.0/bin/svgbob'
 alias ag='rg'
 
@@ -274,6 +274,20 @@ export FZF_COMPLETION_TRIGGER="qwe"
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
+rga-fzf() {
+  RG_PREFIX="rga --files-with-matches --rga-adapters=+pdfpages,tesseract"
+  local file
+
+  file="$(
+    FZF_DEFAULT_COMMAND="$RG_PREFIX '$1'" \
+      fzf --sort --preview="[[ ! -z {} ]] && rga --pretty --context 5 {q} {}" \
+      --phony -q "$1" \
+      --bind "change:reload:$RG_PREFIX {q}" \
+      --preview-window="70%:wrap"
+  )" &&
+    echo "opening $file" &&
+    xdg-open "$file"
+}
 
 # fshow() {
 #   git log --graph --color=always \

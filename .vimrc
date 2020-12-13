@@ -815,6 +815,7 @@ nnoremap K kJ
 " }
 " EOF
 "
+au FileType rb,ruby let b:prettier_exec_cmd = "rbprettier"
 
 function! RefreshRubyTags()
   if (g:asyncrun_status != 'running')
