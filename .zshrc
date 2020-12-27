@@ -185,6 +185,7 @@ alias svgbob='/home/dudev/.asdf/installs/rust/1.35.0/bin/svgbob'
 alias ag='rg'
 
 export BROWSER=firefox
+
 alias pihole-admin="$BROWSER http://192.168.0.137/admin"
 alias trello="$BROWSER https://trello.com"
 alias en-pl="$BROWSER 'https://docs.google.com/spreadsheets/d/1DuI1tdArpFMLZBXbpOlRv3L0K_0EqIBnC2HJTAgpj-M/edit#gid=0'"
@@ -328,6 +329,7 @@ export CONFIG_SWITCHES_PATH=~/Programming/config-switches
 alias mute3='pactl set-sink-mute 3 1'
 alias unmute3='pactl set-sink-mute 3 0'
 alias subscribe-to-audio-events='pactl subscribe'
+alias backup='restic -r b2:dudev-backups:backups --verbose --exclude="$HOME/home_25-11-2019" --exclude="$HOME/VirtualBox VMs" --exclude="$HOME/.local/share/Steam" --exclude="$HOME/cache" backup ~/'
 
 export GOPATH=$HOME/Programming/golang
 export PATH=$PATH:$GOPATH/bin
