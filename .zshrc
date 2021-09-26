@@ -329,7 +329,58 @@ export CONFIG_SWITCHES_PATH=~/Programming/config-switches
 alias mute3='pactl set-sink-mute 3 1'
 alias unmute3='pactl set-sink-mute 3 0'
 alias subscribe-to-audio-events='pactl subscribe'
-alias backup='restic -r b2:dudev-backups:backups --verbose --exclude="$HOME/home_25-11-2019" --exclude="$HOME/VirtualBox VMs" --exclude="$HOME/.local/share/Steam" --exclude="$HOME/cache" backup ~/'
+
+_backup_prepare () {
+  export $(sudo cat /home/dudev/.restic_cron_creds | xargs)
+}
+
+_backup_remove_old_snapshots () {
+  restic forget -r b2:dudev-backups:backups --keep-weekly 10
+}
+
+_backup_verify () {
+  restic check -r b2:dudev-backups:backups
+}
+
+backup () {
+  echo "---------------Scheduled backup time---------------"
+  echo ""
+
+  _backup_prepare
+
+  restic -r b2:dudev-backups:backups \
+    --verbose \
+    --exclude="$HOME/snap" \
+    --exclude="$HOME/Android" \
+    --exclude="$HOME/.android" \
+    --exclude="$HOME/ApkProjects" \
+    --exclude="$HOME/home_25-11-2019" \
+    --exclude="$HOME/.asdf" \
+    --exclude="$HOME/VirtualBox VMs" \
+    --exclude="$HOME/.local/share/Steam" \
+    --exclude="$HOME/.cache" \
+    --exclude="$HOME/.npm" \
+    backup ~/
+
+  echo ""
+  echo "---------------Backup done, removing old snapshots---------------"
+  echo ""
+
+  _backup_remove_old_snapshots
+
+  echo ""
+  echo "---------------Old snapshots removed, verifying the data is restorable---------------"
+  echo ""
+
+  _backup_verify
+
+  echo ""
+  echo "---------------Backup done and verified!---------------"
+}
+
+alias ga='stty sane; git add'
+alias :q=exit
+alias nodejs=node
 
 export GOPATH=$HOME/Programming/golang
 export PATH=$PATH:$GOPATH/bin
@@ -364,4 +415,10 @@ FZF_TAB_COMMAND=(
 zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
 
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /home/dudev/.asdf/installs/terraform/0.13.5/bin/terraform terraform
+
+# Created by `pipx` on 2021-08-31 09:52:32
+export PATH="$PATH:/home/dudev/.local/bin"
+
+android_studio () {
+  /home/dudev/android-studio/jre/bin/java -classpath /home/dudev/android-studio/lib/bootstrap.jar:/home/dudev/android-studio/lib/util.jar:/home/dudev/android-studio/lib/jdom.jar:/home/dudev/android-studio/lib/log4j.jar:/home/dudev/android-studio/lib/jna.jar:/home/dudev/android-studio/jre/lib/tools.jar -Xms256m -Xmx1280m -XX:ReservedCodeCacheSize=512m -XX:MaxJavaStackTraceDepth=10000 -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -ea -XX:+UseG1GC -XX:SoftRefLRUPolicyMSPerMB=50 -XX:CICompilerCount=2 -Dsun.io.useCanonCaches=false -Djdk.http.auth.tunneling.disabledSchemes="" -Djdk.attach.allowAttachSelf=true -Djdk.module.illegalAccess.silent=true -Dkotlinx.coroutines.debug=off -Djna.nosys=true -Djna.boot.library.path= -Didea.vendor.name=Google -Dsun.tools.attach.tmp.only=true -XX:ErrorFile=/home/dudev/java_error_in_studio_%p.log -XX:HeapDumpPath=/home/dudev/java_error_in_studio_.hprof -Didea.vendor.name=Google -Didea.paths.selector=AndroidStudioPreview2021.1 -Djb.vmOptionsFile=/home/dudev/android-studio/bin/studio64.vmoptions -Didea.platform.prefix=AndroidStudio -Didea.jre.check=true com.intellij.idea.Main
+}
