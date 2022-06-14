@@ -15,30 +15,33 @@ set $up k
 set $right l
 
 # Your preferred terminal emulator
-set $term alacritty
+set $term kitty
 
 # Your preferred application launcher
 # Note: it's recommended that you pass the final command to sway
 set $menu '~/launch'
 
+bindsym $altkey+space exec $TERMCMD --name=launcher -e "$SHELL -c '~/.launch'"
+for_window [app_id="^launcher$"] floating enable, border none
+
 # set $launcher gnome-terminal --hide-menubar -- $SHELL -c '~/launch'
-set $launcher alacritty -t launcher --class launcher -e $SHELL -c '~/launch'
-bindsym $mod+d exec $launcher
+# set $launcher alacritty -t launcher --class launcher -e $SHELL -c '~/launch'
+# bindsym $mod+d exec $launcher
 
-bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
-bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5%
-bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5%
+# bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
+# bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5%
+# bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5%
 
-bindsym XF86MonBrightnessDown exec brightnessctl s 5%-
-bindsym XF86MonBrightnessUp exec  brightnessctl s +5%
+# bindsym XF86MonBrightnessDown exec brightnessctl s 5%-
+# bindsym XF86MonBrightnessUp exec  brightnessctl s +5%
 
-bindsym XF86AudioPlay exec playerctl play-pause
-bindsym XF86AudioNext exec playerctl next
-bindsym XF86AudioPrev exec playerctl previous
+# bindsym XF86AudioPlay exec playerctl play-pause
+# bindsym XF86AudioNext exec playerctl next
+# bindsym XF86AudioPrev exec playerctl previous
 
 # A bit hackish but should work as long as gnome-terminal is only used for the launcher
-for_window [app_id="^gnome-terminal-server$"] floating enable, border none
-for_window [app_id="^launcher$"] floating enable, border none
+# for_window [app_id="^gnome-terminal-server$"] floating enable, border none
+# for_window [app_id="^launcher$"] floating enable, border none
 
 set $cl_high #009ddc
 set $cl_indi #d9d8d8
@@ -57,20 +60,18 @@ client.urgent           $cl_urge $cl_urge $cl_fore $cl_urge $cl_urge
 # Laptop screen
 set $laptop 'eDP-1'
 
+output DP-2 pos 0 0
+output eDP-1 pos 0 2160
+
 # Needed for config switches
 set $is_laptop_on disable
+output DP-2 resolution 3840x2160@60.000000Hz
+focus output DP-2
 output $laptop transform 0
 
 bindswitch lid:on output $laptop disable
 
-output * bg /home/pawel/Pictures/Wallpapers/proxy.duckduckgo.com.jpeg fill
-
-# output DP-1 resolution 2560x1080@165.990997Hz
-# output DP-2 resolution 1920x1080@60.000000Hz
-output DP-2 resolution 1920x1080@120.000000Hz
-# output DP-2 resolution 3840x2160@30Hz
-
-focus output DP-2
+output * bg /home/dudev/Desktop/Everything/wallpaper_mikael_gustafsson.png fill
 
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
@@ -92,20 +93,20 @@ focus output DP-2
 font pango:Sans 12
 
 # Window borders
-default_border pixel 1
+default_border pixel 3
 default_floating_border normal
 hide_edge_borders smart
 
 smart_gaps on
-gaps inner 2
-gaps outer 2
+gaps inner 5
+gaps outer 0
 
 # Built-in keyboard
 input * {
   xkb_layout pl
   xkb_options ctrl:nocaps
   repeat_delay 200
-  repeat_rate 15
+  repeat_rate 35
 }
 
 # Dell touchpad
@@ -161,6 +162,10 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # Workspaces:
+
+workspace 1 output DP-2
+workspace 2 output eDP-1
+
 # switch to workspace
 bindsym $mod+1 workspace 1
 bindsym $mod+2 workspace 2
@@ -254,26 +259,29 @@ bindsym $mod+r mode "resize"
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
-    # mode overlay
-    mode hide
-
-    position bottom
-
-    # When the status_command prints a new line to stdout, swaybar updates.
-    # The default just shows the current date and time.
-    status_command while \
-      echo 'Now playing: ' \
-      $(playerctl metadata title) \
-      ' - ' \
-      $(playerctl metadata artist) \
-      $(date +'%Y-%m-%d %l:%M:%S %p'); \
-    do sleep 1; done
+    mode dock
+    position top
+    status_padding 5
 
     colors {
         statusline #ffffff
-        background #32323250
+        background #323232DD
         inactive_workspace #32323200 #32323200 #5c5c5c
     }
+
+    # When the status_command prints a new line to stdout, swaybar updates.
+    # The default just shows the current date and time.
+    # status_command while \
+      # echo 'Now playing: ' \
+      # $(playerctl metadata title) \
+      # ' - ' \
+      # $(playerctl metadata artist) \
+      # echo $(date +'%Y-%m-%d %l:%M:%S %p'); \
+    # do sleep 1; done
+
+    status_command while \
+      echo $(date +'%d-%m-%Y %k:%M:%S %p')\ ;\
+    do sleep 1; done
 
     separator_symbol '|'
 

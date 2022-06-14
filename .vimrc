@@ -1,5 +1,10 @@
 set shell=/bin/zsh
 
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 0
+set guicursor=
+
+" let $FZF_PREVIEW_COMMAND = 'bat --theme="ansi-dark" --color=always --pager=never --style="-numbers" --highlight-line=0 "$FILE"'
+
 set title
 
 " Removed in Neovim, keeping this for backwards compatibility
@@ -18,6 +23,10 @@ set shada='1000
 nnoremap j gj
 nnoremap k gk
 
+" Navigate quickfix entries
+map <C-j> :cn<CR>zz
+map <C-k> :cp<CR>zz
+
 " Automatically indent pasted text
 nnoremap p p=`]
 "nmap =p p`[v`]==
@@ -27,14 +36,12 @@ set sidescroll=5
 set scrolloff=1
 
 set shortmess-=S
-set shortmess-=s
 " Mouse support
 
 set timeoutlen=1000 ttimeoutlen=0
 
 set number
 set norelativenumber
-set nocursorline
 
 set noshowmode
 set laststatus=2
@@ -78,10 +85,7 @@ set softtabstop=2
 
 " Ruler:
 set ruler
-set colorcolumn=120
-
-" Undo history length
-set undolevels=500
+set colorcolumn=140
 
 " Live preview of Ex commands
 set inccommand=nosplit
@@ -95,13 +99,12 @@ Plug 'tpope/vim-repeat'
 
 Plug 'mbbill/undotree'
 
-Plug 'Yggdroot/indentLine'
-Plug 'lukas-reineke/indent-blankline.nvim'
+Plug 'lukas-reineke/indent-blankline.nvim', { 'branch': 'lua' }
 
 Plug 'pechorin/any-jump.vim'
 
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'yuki-yano/fzf-preview.vim', { 'branch': 'release/remote', 'do': ':UpdateRemotePlugins' }
 
 " Git integration:
@@ -112,8 +115,8 @@ Plug 'iberianpig/tig-explorer.vim'
 
 Plug 'rbgrouleff/bclose.vim'
 
-Plug 'itchyny/lightline.vim'
-Plug 'shinchu/lightline-gruvbox.vim'
+" Plug 'itchyny/lightline.vim'
+" Plug 'shinchu/lightline-gruvbox.vim'
 
 " TODO:
 Plug 'awetzel/elixir.nvim'
@@ -135,7 +138,7 @@ Plug 'kassio/neoterm'
 
 Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
 
-Plug 'prettier/vim-prettier'
+" Plug 'prettier/vim-prettier'
 
 Plug 'fatih/vim-go'
 
@@ -144,7 +147,10 @@ Plug 'cohama/lexima.vim'
 
 Plug 'christoomey/vim-tmux-navigator'
 Plug '907th/vim-auto-save'
+
+" Plug 'folke/tokyonight.nvim'
 Plug 'morhetz/gruvbox'
+
 Plug 'psliwka/vim-smoothie'
 Plug 'ap/vim-you-keep-using-that-word'
 Plug 'rhysd/git-messenger.vim'
@@ -158,20 +164,31 @@ Plug 'romgrk/nvim-treesitter-context'
 
 Plug 'neovim/nvim-lspconfig'
 Plug 'kabouzeid/nvim-lspinstall'
+
 Plug 'hrsh7th/nvim-compe'
-Plug 'folke/trouble.nvim'
+" Plug 'andersevenrud/compe-tmux', { 'branch': 'compe' }
+
+Plug 'luukvbaal/stabilize.nvim'
+" Plug 'folke/trouble.nvim'
+
+Plug 'folke/lsp-colors.nvim'
+
+" Solidity
+Plug 'thesis/vim-solidity'
+
 call plug#end()
 
-let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+" let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 if (has("termguicolors"))
  set termguicolors
 endif
 
-set background=light
-let g:gruvbox_contrast_dark = 'soft'
-let g:gruvbox_contrast_light = 'soft'
+set background=dark
+" let g:gruvbox_contrast_dark = 'soft'
+" let g:gruvbox_contrast_light = 'soft'
+" colorscheme tokyonight
 colorscheme gruvbox
 
 "Map leader to comma
@@ -196,23 +213,33 @@ let g:strip_whitespace_confirm=0
 let g:strip_only_modified_lines=1
 
 nnoremap <silent> <C-p> :FzfPreviewDirectoryFiles<CR>
-nnoremap <silent> <C-l> :FzfPreviewProjectMrwFiles --add-fzf-arg=--no-sort<CR>
+nnoremap <silent> <C-l> :FzfPreviewProjectMruFiles --add-fzf-arg=--no-sort<CR>
+nnoremap <silent> <C-\> :FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--no-preview<CR>
+
+nnoremap \ :Rg<SPACE>
+xnoremap \ y:Rg<SPACE><C-r>"<CR>
 
 let g:lightline = {
-      \ 'colorscheme': 'gruvbox',
-      \ 'component_function': {
-      \   'filename': 'LightlineFilename'
-      \ },
+      \ 'colorscheme': 'tokyonight',
       \ }
 
-function! LightlineFilename()
-  let root = fnamemodify(get(b:, 'git_dir'), ':h')
-  let path = expand('%:p')
-  if path[:len(root)-1] ==# root
-    return path[len(root)+1:]
-  endif
-  return expand('%')
-endfunction
+
+" This function has very bad performance!!!
+" let g:lightline = {
+"       \ 'colorscheme': 'tokyonight',
+"       \ 'component_function': {
+"         \   'filename': 'LightlineFilename'
+"         \ },
+"         \ }
+
+" function! LightlineFilename()
+"   let root = fnamemodify(get(b:, 'git_dir'), ':h')
+"   let path = expand('%:p')
+"   if path[:len(root)-1] ==# root
+"     return path[len(root)+1:]
+"   endif
+"   return expand('%')
+" endfunction
 
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 
@@ -223,7 +250,7 @@ let g:gitgutter_grep = 'rg'
 
 nnoremap <leader>gg :GitGutterPreviewHunk<CR>
 
-set nocursorcolumn
+set cursorcolumn
 set cursorline
 set re=1
 
@@ -263,10 +290,11 @@ nnoremap <esc> :noh<Enter>
 
 let g:nv_search_paths = ['~/wiki', '~/writing', '~/code', 'notes.md']
 
-let g:fzf_preview_command = 'batcat --theme="ansi-dark" --color=always --style=grid {-1}'
+let g:fzf_preview_command = 'bat --theme="ansi-dark" --color=always --style=grid {-1}'
 let g:fzf_preview_directory_files_command = 'rg --files --hidden --follow --no-messages -g \!"* *"'
-let g:fzf_preview_grep_cmd = 'rg --line-number --no-heading'
-let g:fzf_preview_lines_command = "awk '{if (NF>0) print NR, $0}'"
+let g:fzf_preview_grep_cmd = 'rg --sort --line-number --no-heading --color=never'
+" let g:fzf_preview_lines_command = "awk '{if (NF>0) print NR, $0}'"
+let g:fzf_preview_lines_command = 'bat --color=always --plain --number'
 let g:fzf_preview_floating_window_rate = 0.9
 let g:fzf_preview_use_dev_icons = 0
 let g:fzf_preview_buffers_jump = 1
@@ -286,9 +314,9 @@ nnoremap <silent> <A-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <A-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <A-a> :TmuxNavigatePrevious<cr>
 
-set updatetime=1000 " Affects cursorhold
-let g:auto_save_events = ["CursorHold"]
-let g:auto_save = 1
+" set updatetime=1000 " Affects cursorhold
+" let g:auto_save_events = ["CursorHold"]
+" let g:auto_save = 1
 
 set undofile " Maintain undo history between sessions
 set undodir=~/.vim/undodir
@@ -309,7 +337,8 @@ let g:slime_dont_ask_default = 1
 let g:slime_default_config = {"socket_name": "default", "target_pane": "5"}
 
 function! SendRspecToTmux() abort
-  execute 'silent SlimeSend1 be spring rspec ' . expand('%:p') . ':' . line('.')
+  " execute 'silent SlimeSend1 be spring rspec ' . expand('%:p') . ':' . line('.')
+  execute 'silent SlimeSend1 sr ' . expand('%:p') . ':' . line('.')
 endfunction
 
 nmap <Leader>r :call SendRspecToTmux()<CR>
@@ -327,6 +356,11 @@ set textwidth=0 wrapmargin=0
 nnoremap K kJ
 
 lua <<EOF
+require("stabilize").setup()
+
+-- vim.g.tokyonight_style = "storm"
+-- vim.g.tokyonight_italic_functions = true
+
 require'nvim-treesitter.configs'.setup {
   ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   ignore_install = {}, -- List of parsers to ignore installing
@@ -334,16 +368,58 @@ require'nvim-treesitter.configs'.setup {
     enable = true,              -- false will disable the whole extension
     disable = {},  -- list of language that will be disabled
   },
+
   indent = {
     enable = true
-  }
+  },
+
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = '<CR>',
+      scope_incremental = '<CR>',
+      node_incremental = '<TAB>',
+      node_decremental = '<S-TAB>',
+    },
+  },
 }
 
 require'treesitter-context.config'.setup{
   enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
 }
 
+vim.lsp.handlers["textDocument/publishDiagnostics"] =
+vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+  underline = false,
+  virtual_text = { spacing = 1 },
+  signs = false,
+  update_in_insert = true
+})
+
 local nvim_lsp = require('lspconfig')
+
+-- Finally, let's initialize the Elixir language server
+
+-- Replace the following with the path to your installation
+local path_to_elixirls = vim.fn.expand("~/Programming/elixir-ls/rel/language_server.sh")
+
+nvim_lsp.elixirls.setup({
+  cmd = {path_to_elixirls},
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+  elixirLS = {
+    -- I choose to disable dialyzer for personal reasons, but
+    -- I would suggest you also disable it unless you are well
+    -- aquainted with dialzyer and know how to use it.
+    dialyzerEnabled = false,
+    -- I also choose to turn off the auto dep fetching feature.
+    -- It often get's into a weird state that requires deleting
+    -- the .elixir_ls directory and restarting your editor.
+    fetchDeps = false
+    }
+  }
+})
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -380,22 +456,24 @@ end
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
 
-nvim_lsp.solargraph.setup {
-  flags = {
-    debounce_text_changes = 150,
-  }
-}
+--nvim_lsp.solargraph.setup {
+  --flags = {
+    --debounce_text_changes = 150,
+  --}
+--}
 
-nvim_lsp.bashls.setup({})
-
-local servers = { "solargraph" }
+--local servers = { "bashls", "solargraph" }
+local servers = { "bashls" }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
 
-require("trouble").setup {
-   icons = false
-}
+ --require("trouble").setup {
+    --icons = false;
+    --mode = "quickfix";
+ --}
+
+vim.o.completeopt = "menuone,noselect"
 
 require'compe'.setup {
   enabled = true;
@@ -419,31 +497,10 @@ require'compe'.setup {
     nvim_lua = true;
     vsnip = true;
     ultisnips = true;
+    tmux = true;
   };
 }
-
 EOF
-
-highlight LspDiagnosticsDefaultError guifg=grey
-highlight LspDiagnosticsDefaultWarning guifg=grey
-highlight LspDiagnosticsDefaultInformation guifg=grey
-highlight LspDiagnosticsDefaultHint guifg=grey
-highlight LspDiagnosticsVirtualTextError guifg=grey
-highlight LspDiagnosticsVirtualTextWarning guifg=grey
-highlight LspDiagnosticsVirtualTextInformation guifg=grey
-highlight LspDiagnosticsVirtualTextHint guifg=grey
-highlight LspDiagnosticsUnderlineError guifg=grey
-highlight LspDiagnosticsUnderlineWarning guifg=grey
-highlight LspDiagnosticsUnderlineInformation guifg=grey
-highlight LspDiagnosticsUnderlineHint guifg=grey
-highlight LspDiagnosticsFloatingError guifg=grey
-highlight LspDiagnosticsFloatingWarning guifg=grey
-highlight LspDiagnosticsFloatingInformation guifg=grey
-highlight LspDiagnosticsFloatingHint guifg=grey
-highlight LspDiagnosticsSignError guifg=grey
-highlight LspDiagnosticsSignWarning guifg=grey
-highlight LspDiagnosticsSignInformation guifg=grey
-highlight LspDiagnosticsSignHint guifg=grey
 
 au FileType rb,ruby let b:prettier_exec_cmd = "rbprettier"
 
@@ -470,3 +527,31 @@ nnoremap <c-s> :NV<CR>
 noremap <Leader>q :tab split<CR>
 
 set switchbuf="usetab"
+
+set nofoldenable
+
+" This is only needed for parcel
+set backupcopy=yes
+
+" Sort quickfix entries
+function! s:CompareQuickfixEntries(i1, i2)
+  if bufname(a:i1.bufnr) == bufname(a:i2.bufnr)
+    return a:i1.lnum == a:i2.lnum ? 0 : (a:i1.lnum < a:i2.lnum ? -1 : 1)
+  else
+    return bufname(a:i1.bufnr) < bufname(a:i2.bufnr) ? -1 : 1
+  endif
+endfunction
+
+function SortUniqQFList()
+  let sortedList = sort(getqflist(), 's:CompareQuickfixEntries')
+  let uniqedList = []
+  let last = ''
+  for item in sortedList
+    let this = bufname(item.bufnr) . "\t" . item.lnum
+    if this !=# last
+      call add(uniqedList, item)
+      let last = this
+    endif
+  endfor
+  call setqflist(uniqedList)
+endfunction

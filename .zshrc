@@ -1,6 +1,3 @@
-# Don't ask whether to import .env file every time I change dir
-ZSH_DOTENV_PROMPT=false
-
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM="xterm-kitty"
@@ -16,36 +13,28 @@ export TERM="xterm-kitty"
 # Path to your oh-my-zsh installation.
 export ZSH=/home/dudev/.oh-my-zsh
 
-function manswitch() { man $1 | less -p "^ +$2"; }
+function manswitch() { man $1 | less -p "$2"; }
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/ # Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-# ZSH_THEME="powerlevel9k/powerlevel9k"
 ZSH_THEME="materialshell"
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time dir dir_writable vcs)
-# POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time custom_progress_bar ram dir dir_writable vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=()
-POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
-POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX=" %{%F{green}%}➜ "
-POWERLEVEL9K_SHORTEN_STRATEGY="truncate_to_last"
+#
+# Don't ask whether to import .env file every time I change dir
+ZSH_DOTENV_PROMPT=false
 
-export PROGRESS_BAR_START_HOUR=10
-export PROGRESS_BAR_HOURS_COUNT=8
-function progress_bar()
-{
-  local output="%{%F{black}%}$(seq -f "%02g" $PROGRESS_BAR_START_HOUR $PROGRESS_BAR_START_HOUR) ["
-  for x in $(seq 0 $PROGRESS_BAR_HOURS_COUNT)
-  do
-    output="$output$(if [ $(date +"%H") = $(echo $(seq -f "%02g" $(((PROGRESS_BAR_START_HOUR + $x) % 24)) $(((PROGRESS_BAR_START_HOUR + $x) % 24)))) ]; then echo '»'; else echo '_'; fi;)"
-  done
-  output="$output] $(seq -f "%02g" $(((PROGRESS_BAR_START_HOUR + PROGRESS_BAR_HOURS_COUNT) % 24)) $(((PROGRESS_BAR_START_HOUR + PROGRESS_BAR_HOURS_COUNT) % 24)))"
-  echo $output
+function ranger {
+    local IFS=$'\t\n'
+    local tempfile="$(mktemp -t tmp.XXXXXX)"
+    local ranger_cmd=(
+        command
+        ranger
+        --cmd="map Q chain shell echo %d > "$tempfile"; quitall"
+    )
+
+    ${ranger_cmd[@]} "$@"
+    if [[ -f "$tempfile" ]] && [[ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]]; then
+        cd -- "$(cat "$tempfile")" || return
+    fi
+    command rm -f -- "$tempfile" 2>/dev/null
 }
-POWERLEVEL9K_CUSTOM_PROGRESS_BAR=progress_bar
-POWERLEVEL9K_CUSTOM_PROGRESS_BAR_BACKGROUND="cyan"
 
 # Reevaluate prompt expressions every time prompt is displayed
 # setopt prompt_subst
@@ -55,7 +44,7 @@ POWERLEVEL9K_CUSTOM_PROGRESS_BAR_BACKGROUND="cyan"
 
 # Uncomment the following line to use hyphen-insensitive completion. Case
 # sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
@@ -69,7 +58,8 @@ POWERLEVEL9K_CUSTOM_PROGRESS_BAR_BACKGROUND="cyan"
 # Uncomment the following line to disable auto-setting terminal title.
 # DISABLE_AUTO_TITLE="true"
 
-# Uncomment the following line to enable command auto-correction.  ENABLE_CORRECTION="true"
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
@@ -99,75 +89,43 @@ plugins=(
 
 typeset -A FAST_HIGHLIGHT
 FAST_HIGHLIGHT[git-cmsg-len]=72
+
 # User configuration
-
 export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games/:/home/$USER/.cargo/bin"
-
 source $ZSH/oh-my-zsh.sh
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/dsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # eval "$(thefuck --alias)"
 # eval "$(thefuck --alias kurde)"
 
-# source ~/.bin/tmuxinator.zsh
-# export TERM="xterm-256color"
-
-### Added by the Heroku Toolbelt
+# Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
-
-# if [ "$TERM" = "xterm" ]; then
-  # export TERM=xterm-256color
-# fi
-
 export RESTIC_REPOSITORY='rclone:gdrive:/'
 
-# [[ $TMUX = "" ]] && export TERM="xterm-256color"
-[[ $TMUX = "" ]] && export TERM="xterm-kitty"
 alias fdfind='fdfind --hidden --no-ignore-vcs --color=always'
+alias t=tmux
 alias tmux="env TERM=xterm-256color tmux new-session \; split-window -h \; split-window -v"
 alias ssh="TERM=xterm-256color ssh"
-# export EDITOR="TERM='' nvim"
-export EDITOR="nvim"
 export ERL_AFLAGS="-kernel shell_history enabled"
 alias sudo='sudo '
-# alias n="TERM='' nvim"
-# alias rspec="bundle exec rspec"
-alias rubocop="bundle exec rubocop"
+
 alias brexit="exit"
+alias xit="exit"
+alias x="exit"
+
 alias be="bundle exec"
+alias s="bundle exec spring"
+alias r="bundle exec rspec"
+alias rspec="bundle exec rspec"
+alias sr="bundle exec spring rspec"
+alias rubocop="bundle exec rubocop"
 alias rake="bundle exec rake"
+
+export EDITOR="nvim"
 alias vim_diesel="TERM='' nvim"
 alias vim="TERM='' nvim"
 alias vi="TERM='' nvim"
 alias n="TERM='' nvim"
-alias s="spring"
-alias r="rspec"
-alias sr="spring rspec"
-alias xit="exit"
-alias x="exit"
-# alias :q="exit"
-alias fucking="sudo"
+
 alias map="xargs -n1"
 alias sso="google site:stackoverflow.com"
 
@@ -181,10 +139,12 @@ alias pbpaste='xclip -selection clipboard -o'
 alias cat='batcat'
 
 alias paint="kolourpaint"
-alias svgbob='/home/dudev/.asdf/installs/rust/1.35.0/bin/svgbob'
+# alias svgbob='/home/dudev/.asdf/installs/rust/1.35.0/bin/svgbob'
 alias ag='rg'
 
-export BROWSER=firefox
+export BROWSER=chromium
+
+complete -o nospace -C /home/dudev/.asdf/installs/terraform/0.13.5/bin/terraform terraform
 
 alias pihole-admin="$BROWSER http://192.168.0.137/admin"
 alias trello="$BROWSER https://trello.com"
@@ -235,9 +195,6 @@ function fzf-launch {
 }
 alias fl='fzf-launch'
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-alias nf='TERM="" nvim -o `fzf`'
 alias gs='#gs'
 alias ls='lsd'
 alias gestures='sudo libinput-gestures'
@@ -249,6 +206,8 @@ alias psql=pgcli
 
 # === fzf ===
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 if [[ ! "$PATH" == ~/.fzf/bin* ]]; then
   export PATH="$PATH:~/.fzf/bin"
 fi
@@ -256,19 +215,13 @@ fi
 # Auto-completion
 [[ $- == *i* ]] && source "~/.fzf/shell/completion.zsh" 2> /dev/null
 
-# Key bindings
-# source "~/.fzf/shell/key-bindings.zsh"
-
 # Setting ag as the default source for fzf
-# export FZF_DEFAULT_COMMAND='ag -g ""'
-export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
-export FZF_DEFAULT_COMMAND='rg'
-export FZF_ALT_C_COMMAND='fdfind --type d .'
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden -L'
+export FZF_ALT_C_COMMAND='fdfind --hidden --type d .'
 
 # To apply the command to CTRL-T as well
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_COMPLETION_TRIGGER="qwe"
-# export QT_QPA_PLATFORM='wayland'
 
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
@@ -301,26 +254,24 @@ rga-fzf() {
 # }
 
 fshow() {
-  git log --graph --color=always \
-      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
-  fzf --ansi --no-sort --reverse --tiebreak=index --toggle-sort=\` \
+  glog --color=always |
+  command fzf --ansi --no-sort --reverse --tiebreak=index --toggle-sort=\` \
       --bind 'ctrl-m:execute/
                 echo {} | grep -o "[a-f0-9]\{7\}" |
-                xargs -I % sh -c "git show --color=always % | less -R"
+                xargs -I % sh -c "git show --color=always %" |
+                delta --plus-color="#012800" --minus-color="#340001" --theme="base16"
               /'
 }
 
 man-find() {
     f=$(fd . $MANPATH/man${1:-1} -t f -x echo {/.} | fzf) && man $f
 }
+
 alias configure-sway='nvim .config/sway/config'
 alias configure-pihole=pihole-admin
 alias vpn='expressvpn status'
 # alias launch='compgen -c | sort -u | fzf --preview="which {}" | xargs -r swaymsg -t command exec'
 # alias launch='history | fzf -q test --preview="which {}" | awk "{print $2}" | xargs -r swaymsg -t command exec'
-alias launch='./launch'
-alias q=launch
-# export SDL_VIDEODRIVER=wayland
 alias toggle-laptop='./toggle-laptop'
 alias toggle-laptop-screen-rotation='./toggle-laptop-screen-rotation'
 
@@ -413,6 +364,15 @@ FZF_TAB_COMMAND=(
     --print-query
 )
 zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
+
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# switch group using `,` and `.`
+zstyle ':fzf-tab:*' switch-group ',' '.'
 
 autoload -U +X bashcompinit && bashcompinit
 

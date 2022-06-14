@@ -66,13 +66,13 @@ handle_extension() {
 
         ## PDF
         pdf)
-            ## Preview as text conversion
-            pdftotext -l 10 -nopgbrk -q -- "${FILE_PATH}" - | \
-              fmt -w "${PV_WIDTH}" && exit 5
-            mutool draw -F txt -i -- "${FILE_PATH}" 1-10 | \
-              fmt -w "${PV_WIDTH}" && exit 5
-            exiftool "${FILE_PATH}" && exit 5
-            exit 1;;
+            pdftoppm -f 1 -l 1 \
+                     -scale-to-x 1920 \
+                     -scale-to-y -1 \
+                     -singlefile \
+                     -jpeg -tiffcompression jpeg \
+                     -- "${FILE_PATH}" "${IMAGE_CACHE_PATH%.*}" \
+                && exit 6 || exit 1;;
 
         ## BitTorrent
         torrent)
@@ -305,7 +305,7 @@ handle_mime() {
             # env HIGHLIGHT_OPTIONS="${HIGHLIGHT_OPTIONS}" highlight \
             #     --out-format="${highlight_format}" \
             #     --force -- "${FILE_PATH}" && exit 5
-            batcat --color=always --theme=base16 \
+            bat --color=always --theme=base16 \
                 -- "${FILE_PATH}" && exit 5
             # pygmentize -f "${pygmentize_format}" -O "style=${PYGMENTIZE_STYLE}"\
                 #-- "${FILE_PATH}" && exit 5
