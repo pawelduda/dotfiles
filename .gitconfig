@@ -1,0 +1,30 @@
+[gpg]
+	program = /usr/bin/gpg
+[user]
+        signingkey = AE28ACFB54683630
+	email = git.push@paweldu.dev
+	name = Pawel Duda
+; [commit]
+	; gpgsign = true
+[core]
+        editor = nvim
+        pager = delta
+	excludesfile = /home/dudev/.gitignore
+	attributesfile = /home/dudev/.gitattributes
+[interactive]
+        diffFilter = delta --color-only
+[pull]
+	rebase = true
+[rebase]
+	instructionFormat = (%an <%ae>) %s
+[delta]
+        decorations = true
+        line-numbers = true
+        navigate = true
+        syntax-theme = base16
+        plus-style = syntax "#012800"
+        minus-style = syntax "#3f0001"
+[merge]
+        conflictstyle = diff3
+[diff]
+        colorMoved = default
