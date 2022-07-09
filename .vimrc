@@ -44,7 +44,8 @@ set number
 set norelativenumber
 
 set noshowmode
-set laststatus=2
+" Use global statusline
+set laststatus=3
 set showtabline=0
 
 set linebreak
@@ -160,7 +161,7 @@ Plug 'jpalardy/vim-slime'
 Plug 'francoiscabrol/ranger.vim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'romgrk/nvim-treesitter-context'
+Plug 'nvim-treesitter/nvim-treesitter-context'
 
 Plug 'neovim/nvim-lspconfig'
 Plug 'kabouzeid/nvim-lspinstall'
@@ -175,6 +176,8 @@ Plug 'folke/lsp-colors.nvim'
 
 " Solidity
 Plug 'thesis/vim-solidity'
+
+Plug 'github/copilot.vim'
 
 call plug#end()
 
@@ -216,8 +219,8 @@ nnoremap <silent> <C-p> :FzfPreviewDirectoryFiles<CR>
 nnoremap <silent> <C-l> :FzfPreviewProjectMruFiles --add-fzf-arg=--no-sort<CR>
 nnoremap <silent> <C-\> :FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--no-preview<CR>
 
-nnoremap \ :Rg<SPACE>
-xnoremap \ y:Rg<SPACE><C-r>"<CR>
+nnoremap \ :Rg!<SPACE>
+xnoremap \ y:Rg!<SPACE><C-r>"<CR>
 
 let g:lightline = {
       \ 'colorscheme': 'tokyonight',
@@ -290,12 +293,12 @@ nnoremap <esc> :noh<Enter>
 
 let g:nv_search_paths = ['~/wiki', '~/writing', '~/code', 'notes.md']
 
-let g:fzf_preview_command = 'bat --theme="ansi-dark" --color=always --style=grid {-1}'
+let g:fzf_preview_command = 'bat --theme="ansi" --color=always --style=grid {-1}'
 let g:fzf_preview_directory_files_command = 'rg --files --hidden --follow --no-messages -g \!"* *"'
 let g:fzf_preview_grep_cmd = 'rg --sort --line-number --no-heading --color=never'
 " let g:fzf_preview_lines_command = "awk '{if (NF>0) print NR, $0}'"
 let g:fzf_preview_lines_command = 'bat --color=always --plain --number'
-let g:fzf_preview_floating_window_rate = 0.9
+let g:fzf_preview_floating_window_rate = 0.98
 let g:fzf_preview_use_dev_icons = 0
 let g:fzf_preview_buffers_jump = 1
 
@@ -362,8 +365,8 @@ require("stabilize").setup()
 -- vim.g.tokyonight_italic_functions = true
 
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  ignore_install = {}, -- List of parsers to ignore installing
+  ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ignore_install = { "phpdoc" }, -- List of parsers to ignore installing
   highlight = {
     enable = true,              -- false will disable the whole extension
     disable = {},  -- list of language that will be disabled
@@ -384,16 +387,16 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 
-require'treesitter-context.config'.setup{
+require'treesitter-context'.setup{
   enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
 }
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] =
 vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
   underline = false,
-  virtual_text = { spacing = 1 },
+  virtual_text = { spacing = 10 },
   signs = false,
-  update_in_insert = true
+  update_in_insert = false
 })
 
 local nvim_lsp = require('lspconfig')
@@ -456,14 +459,13 @@ end
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
 
---nvim_lsp.solargraph.setup {
-  --flags = {
-    --debounce_text_changes = 150,
-  --}
---}
+nvim_lsp.solargraph.setup {
+  flags = {
+    debounce_text_changes = 150,
+  }
+}
 
---local servers = { "bashls", "solargraph" }
-local servers = { "bashls" }
+local servers = { "bashls", "solargraph" }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end

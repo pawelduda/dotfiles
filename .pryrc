@@ -12,7 +12,7 @@ require "readline" if defined?("RbReadline")
 Pry.commands.delete(/\.(.*)/)
 
 def RbReadline.rl_reverse_search_history(sign, key)
-  rl_insert_text `cat ~/.pry_history | fzf --multi --no-sort --height 15 --tac | perl -p -e 'chomp if eof'`
+  rl_insert_text `cat ~/.local/share/pry/pry_history | fzf --multi --no-sort --height 15 --tac | perl -p -e 'chomp if eof'`
 end
 
 def benchmark_time(repetitions = 100, &block)

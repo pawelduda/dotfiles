@@ -377,8 +377,4 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 autoload -U +X bashcompinit && bashcompinit
 
 # Created by `pipx` on 2021-08-31 09:52:32
-export PATH="$PATH:/home/dudev/.local/bin"
-
-android_studio () {
-  /home/dudev/android-studio/jre/bin/java -classpath /home/dudev/android-studio/lib/bootstrap.jar:/home/dudev/android-studio/lib/util.jar:/home/dudev/android-studio/lib/jdom.jar:/home/dudev/android-studio/lib/log4j.jar:/home/dudev/android-studio/lib/jna.jar:/home/dudev/android-studio/jre/lib/tools.jar -Xms256m -Xmx1280m -XX:ReservedCodeCacheSize=512m -XX:MaxJavaStackTraceDepth=10000 -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -ea -XX:+UseG1GC -XX:SoftRefLRUPolicyMSPerMB=50 -XX:CICompilerCount=2 -Dsun.io.useCanonCaches=false -Djdk.http.auth.tunneling.disabledSchemes="" -Djdk.attach.allowAttachSelf=true -Djdk.module.illegalAccess.silent=true -Dkotlinx.coroutines.debug=off -Djna.nosys=true -Djna.boot.library.path= -Didea.vendor.name=Google -Dsun.tools.attach.tmp.only=true -XX:ErrorFile=/home/dudev/java_error_in_studio_%p.log -XX:HeapDumpPath=/home/dudev/java_error_in_studio_.hprof -Didea.vendor.name=Google -Didea.paths.selector=AndroidStudioPreview2021.1 -Djb.vmOptionsFile=/home/dudev/android-studio/bin/studio64.vmoptions -Didea.platform.prefix=AndroidStudio -Didea.jre.check=true com.intellij.idea.Main
-}
+export PATH="$PATH:/Users/dudev/.local/bin"
