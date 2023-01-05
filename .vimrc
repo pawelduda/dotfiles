@@ -93,7 +93,9 @@ set inccommand=nosplit
 
 call plug#begin('~/.vim/plugged')
 Plug 'xolox/vim-misc'
-Plug 'easymotion/vim-easymotion'
+
+" Plug 'easymotion/vim-easymotion'
+Plug 'ggandor/leap.nvim'
 
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
@@ -176,8 +178,6 @@ Plug 'folke/lsp-colors.nvim'
 
 " Solidity
 Plug 'thesis/vim-solidity'
-
-Plug 'github/copilot.vim'
 
 call plug#end()
 
@@ -359,6 +359,8 @@ set textwidth=0 wrapmargin=0
 nnoremap K kJ
 
 lua <<EOF
+require('leap').set_default_keymaps()
+
 require("stabilize").setup()
 
 -- vim.g.tokyonight_style = "storm"
