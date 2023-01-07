@@ -3,8 +3,6 @@ set shell=/bin/zsh
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 0
 set guicursor=
 
-" let $FZF_PREVIEW_COMMAND = 'bat --theme="ansi-dark" --color=always --pager=never --style="-numbers" --highlight-line=0 "$FILE"'
-
 set title
 
 " Removed in Neovim, keeping this for backwards compatibility
@@ -106,10 +104,6 @@ Plug 'lukas-reineke/indent-blankline.nvim', { 'branch': 'lua' }
 
 Plug 'pechorin/any-jump.vim'
 
-Plug 'junegunn/fzf.vim'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'yuki-yano/fzf-preview.vim', { 'branch': 'release/remote', 'do': ':UpdateRemotePlugins' }
-
 " Git integration:
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
@@ -145,7 +139,6 @@ Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
 
 Plug 'fatih/vim-go'
 
-Plug 'https://github.com/Alok/notational-fzf-vim'
 Plug 'cohama/lexima.vim'
 
 Plug 'christoomey/vim-tmux-navigator'
@@ -162,14 +155,26 @@ Plug 'jpalardy/vim-slime'
 
 Plug 'francoiscabrol/ranger.vim'
 
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+
+" Useful status updates for LSP
+Plug 'j-hui/fidget.nvim'
+
+Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-treesitter/nvim-treesitter-context'
 
-Plug 'neovim/nvim-lspconfig'
-Plug 'kabouzeid/nvim-lspinstall'
-
-Plug 'hrsh7th/nvim-compe'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+" Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+" Plug 'hrsh7th/nvim-compe'
 " Plug 'andersevenrud/compe-tmux', { 'branch': 'compe' }
+
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
 Plug 'luukvbaal/stabilize.nvim'
 " Plug 'folke/trouble.nvim'
@@ -214,10 +219,6 @@ let g:better_whitespace_enabled=0
 let g:strip_whitespace_on_save=1
 let g:strip_whitespace_confirm=0
 let g:strip_only_modified_lines=1
-
-nnoremap <silent> <C-p> :FzfPreviewDirectoryFiles<CR>
-nnoremap <silent> <C-l> :FzfPreviewProjectMruFiles --add-fzf-arg=--no-sort<CR>
-nnoremap <silent> <C-\> :FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--no-preview<CR>
 
 nnoremap \ :Rg!<SPACE>
 xnoremap \ y:Rg!<SPACE><C-r>"<CR>
@@ -291,17 +292,6 @@ nnoremap * *``
 noremap! kj <esc>
 nnoremap <esc> :noh<Enter>
 
-let g:nv_search_paths = ['~/wiki', '~/writing', '~/code', 'notes.md']
-
-let g:fzf_preview_command = 'bat --theme="ansi" --color=always --style=grid {-1}'
-let g:fzf_preview_directory_files_command = 'rg --files --hidden --follow --no-messages -g \!"* *"'
-let g:fzf_preview_grep_cmd = 'rg --sort --line-number --no-heading --color=never'
-" let g:fzf_preview_lines_command = "awk '{if (NF>0) print NR, $0}'"
-let g:fzf_preview_lines_command = 'bat --color=always --plain --number'
-let g:fzf_preview_floating_window_rate = 0.98
-let g:fzf_preview_use_dev_icons = 0
-let g:fzf_preview_buffers_jump = 1
-
 noremap :W :w
 
 "call neomake#configure#automake('w')
@@ -362,6 +352,7 @@ lua <<EOF
 require('leap').set_default_keymaps()
 
 require("stabilize").setup()
+require("mason").setup()
 
 -- vim.g.tokyonight_style = "storm"
 -- vim.g.tokyonight_italic_functions = true
@@ -370,7 +361,7 @@ require'nvim-treesitter.configs'.setup {
   ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   ignore_install = { "phpdoc" }, -- List of parsers to ignore installing
   highlight = {
-    enable = true,              -- false will disable the whole extension
+    enable = true,
     disable = {},  -- list of language that will be disabled
   },
 
@@ -426,38 +417,6 @@ nvim_lsp.elixirls.setup({
   }
 })
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-  --Enable completion triggered by <c-x><c-o>
-  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-  -- Mappings.
-  local opts = { noremap=true, silent=true }
-
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-end
-
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
 
@@ -477,33 +436,69 @@ end
     --mode = "quickfix";
  --}
 
-vim.o.completeopt = "menuone,noselect"
+vim.o.completeopt = "menu,menuone,noselect"
 
-require'compe'.setup {
-  enabled = true;
-  autocomplete = true;
-  debug = false;
-  min_length = 1;
-  preselect = 'enable';
-  throttle_time = 80;
-  source_timeout = 200;
-  incomplete_delay = 400;
-  max_abbr_width = 100;
-  max_kind_width = 100;
-  max_menu_width = 100;
-  documentation = true;
+-- Set up nvim-cmp.
+local cmp = require'cmp'
 
-  source = {
-    path = true;
-    buffer = true;
-    calc = true;
-    nvim_lsp = true;
-    nvim_lua = true;
-    vsnip = true;
-    ultisnips = true;
-    tmux = true;
-  };
+cmp.setup({
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<Tab>'] = cmp.mapping.select_next_item(),
+    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    -- { name = 'vsnip' }, -- For vsnip users.
+    -- { name = 'luasnip' }, -- For luasnip users.
+    -- { name = 'ultisnips' }, -- For ultisnips users.
+    -- { name = 'snippy' }, -- For snippy users.
+  }, {
+    { name = 'buffer' },
+  })
+})
+
+-- Set configuration for specific filetype.
+cmp.setup.filetype('gitcommit', {
+  sources = cmp.config.sources({
+    { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+  }, {
+    { name = 'buffer' },
+  })
+})
+
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  })
+})
+
+-- Set up lspconfig.
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+require('telescope').setup{
+  defaults = {
+    layout_strategy = 'horizontal',
+    layout_config = { width = 0.99, height = 0.99 },
+  }
 }
+
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<C-p>', builtin.find_files, {})
+vim.keymap.set('n', '<C-l>', builtin.oldfiles, {})
+vim.keymap.set('n', '<Leader><Leader>', builtin.jumplist, {})
+vim.keymap.set('n', '<C-\\>', builtin.current_buffer_fuzzy_find, {})
+vim.keymap.set('n', '<Leader>l', builtin.resume, {})
 EOF
 
 au FileType rb,ruby let b:prettier_exec_cmd = "rbprettier"
@@ -524,9 +519,6 @@ function! WriteRoomToggle()
 endfunction
 
 map <silent><Leader>v :call WriteRoomToggle()<CR>
-
-let g:nv_create_note_window = 'vertical split'
-nnoremap <c-s> :NV<CR>
 
 noremap <Leader>q :tab split<CR>
 
