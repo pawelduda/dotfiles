@@ -84,7 +84,7 @@ COMPLETION_WAITING_DOTS="true"
 # plugins=(colored-man-pages git zsh-autosuggestions alias-tips z zsh-syntax-highlighting dotenv web-search emoji)
 plugins=(
   colored-man-pages git zsh-autosuggestions alias-tips z fast-syntax-highlighting dotenv web-search emoji fzf-tab
-  zsh-completions
+  zsh-completions asdf
 )
 
 typeset -A FAST_HIGHLIGHT
@@ -114,13 +114,26 @@ alias x="exit"
 
 alias be="bundle exec"
 alias s="bundle exec spring"
-alias r="bundle exec rspec"
+# alias r="bundle exec rspec"
+alias r="bin/rails test"
 alias rspec="bundle exec rspec"
 alias sr="bundle exec spring rspec"
 alias rubocop="bundle exec rubocop"
 alias rake="bundle exec rake"
 
-export EDITOR="nvim"
+function git_checkout_master_rails() (
+  set -exo pipefail
+
+  git checkout master
+  git pull
+  bundle
+  bundle exec rake db:migrate
+  RAILS_ENV=test bundle exec rake db:migrate
+)
+alias gcm_rails=git_checkout_master_rails
+
+export EDITOR="~/nvim-macos/bin/nvim"
+alias nvim="~/nvim-macos/bin/nvim"
 alias vim_diesel="TERM='' nvim"
 alias vim="TERM='' nvim"
 alias vi="TERM='' nvim"
@@ -222,9 +235,6 @@ export FZF_ALT_C_COMMAND='fdfind --hidden --type d .'
 # To apply the command to CTRL-T as well
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_COMPLETION_TRIGGER="qwe"
-
-. $HOME/.asdf/asdf.sh
-. $HOME/.asdf/completions/asdf.bash
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 

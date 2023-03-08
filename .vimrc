@@ -43,8 +43,8 @@ set norelativenumber
 
 set noshowmode
 " Use global statusline
-set laststatus=3
-set showtabline=0
+" set laststatus=3
+set showtabline=2
 
 set linebreak
 set nowrap
@@ -84,7 +84,7 @@ set softtabstop=2
 
 " Ruler:
 set ruler
-set colorcolumn=140
+set colorcolumn=120
 
 " Live preview of Ex commands
 set inccommand=nosplit
@@ -184,6 +184,12 @@ Plug 'folke/lsp-colors.nvim'
 " Solidity
 Plug 'thesis/vim-solidity'
 
+" Center buffer contents horizontally
+Plug 'folke/zen-mode.nvim'
+
+" Search improvements
+Plug 'kevinhwang91/nvim-hlslens'
+
 call plug#end()
 
 " let g:indentLine_char_list = ['|', '¦', '┆', '┊']
@@ -194,7 +200,7 @@ if (has("termguicolors"))
 endif
 
 set background=dark
-" let g:gruvbox_contrast_dark = 'soft'
+let g:gruvbox_contrast_dark = 'hard'
 " let g:gruvbox_contrast_light = 'soft'
 " colorscheme tokyonight
 colorscheme gruvbox
@@ -220,8 +226,10 @@ let g:strip_whitespace_on_save=1
 let g:strip_whitespace_confirm=0
 let g:strip_only_modified_lines=1
 
-nnoremap \ :Rg!<SPACE>
-xnoremap \ y:Rg!<SPACE><C-r>"<CR>
+" nnoremap \ :Rg!<SPACE>
+nnoremap \ :Telescope live_grep default_text=
+" xnoremap \ y:Rg!<SPACE><C-r>"<CR>
+xnoremap \ y:Telescope live_grep default_text=<C-r>"<CR>
 
 let g:lightline = {
       \ 'colorscheme': 'tokyonight',
@@ -274,8 +282,8 @@ au CursorHold * checktime
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " Center screen on next/previous selection.
-nmap n /<CR>zz
-nmap N ?<CR>zz
+nmap <silent> n /<CR>zz
+nmap <silent> N ?<CR>zz
 " Last and next jump should center too.
 nnoremap <C-o> <C-o>zz
 nnoremap <C-i> <C-i>zz
@@ -307,7 +315,7 @@ nnoremap <silent> <A-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <A-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <A-a> :TmuxNavigatePrevious<cr>
 
-" set updatetime=1000 " Affects cursorhold
+set updatetime=500 " Affects cursorhold
 " let g:auto_save_events = ["CursorHold"]
 " let g:auto_save = 1
 
@@ -490,8 +498,18 @@ require('telescope').setup{
   defaults = {
     layout_strategy = 'horizontal',
     layout_config = { width = 0.99, height = 0.99 },
+  },
+  extensions = {
+    fzf = {
+      fuzzy = true,                    -- false will only do exact matching
+      override_generic_sorter = true,  -- override the generic sorter
+      override_file_sorter = true,     -- override the file sorter
+      case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+    }
   }
 }
+
+require('telescope').load_extension('fzf')
 
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<C-p>', builtin.find_files, {})
@@ -499,6 +517,80 @@ vim.keymap.set('n', '<C-l>', builtin.oldfiles, {})
 vim.keymap.set('n', '<Leader><Leader>', builtin.jumplist, {})
 vim.keymap.set('n', '<C-\\>', builtin.current_buffer_fuzzy_find, {})
 vim.keymap.set('n', '<Leader>l', builtin.resume, {})
+-- :Telescope find_files default_text=keymaps
+
+require("zen-mode").setup {
+  window = {
+    backdrop = 1, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
+    -- height and width can be:
+    -- * an absolute number of cells when > 1
+    -- * a percentage of the width / height of the editor when <= 1
+    -- * a function that returns the width or the height
+    width = 160, -- width of the Zen window
+    height = 1, -- height of the Zen window
+    -- by default, no options are changed for the Zen window
+    -- uncomment any of the options below, or add other vim.wo options you want to apply
+    options = {
+      -- signcolumn = "no", -- disable signcolumn
+      -- number = false, -- disable number column
+      -- relativenumber = false, -- disable relative numbers
+      -- cursorline = false, -- disable cursorline
+      -- cursorcolumn = false, -- disable cursor column
+      -- foldcolumn = "0", -- disable fold column
+      -- list = false, -- disable whitespace characters
+    },
+  },
+  plugins = {
+    -- disable some global vim options (vim.o...)
+    -- comment the lines to not apply the options
+    options = {
+      enabled = true,
+      ruler = false, -- disables the ruler text in the cmd line area
+      showcmd = false, -- disables the command in the last line of the screen
+    },
+    twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
+    gitsigns = { enabled = false }, -- disables git signs
+    tmux = { enabled = false }, -- disables the tmux statusline
+    -- this will change the font size on kitty when in zen mode
+    -- to make this work, you need to set the following kitty options:
+    -- - allow_remote_control socket-only
+    -- - listen_on unix:/tmp/kitty
+    kitty = {
+      enabled = false,
+      font = "+4", -- font size increment
+    },
+    -- this will change the font size on alacritty when in zen mode
+    -- requires  Alacritty Version 0.10.0 or higher
+    -- uses `alacritty msg` subcommand to change font size
+    alacritty = {
+      enabled = false,
+      font = "14", -- font size
+    },
+  },
+  -- callback where you can add custom code when the Zen window opens
+  on_open = function(win)
+  end,
+  -- callback where you can add custom code when the Zen window closes
+  on_close = function()
+  end,
+}
+
+require('hlslens').setup()
+
+local kopts = {noremap = true, silent = true}
+
+vim.api.nvim_set_keymap('n', 'n',
+    [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]],
+    kopts)
+vim.api.nvim_set_keymap('n', 'N',
+    [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
+    kopts)
+vim.api.nvim_set_keymap('n', '*', [[*<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', '#', [[#<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', 'g*', [[g*<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', 'g#', [[g#<Cmd>lua require('hlslens').start()<CR>]], kopts)
+
+vim.api.nvim_set_keymap('n', '<Leader>l', '<Cmd>noh<CR>', kopts)
 EOF
 
 au FileType rb,ruby let b:prettier_exec_cmd = "rbprettier"
@@ -551,3 +643,11 @@ function SortUniqQFList()
   endfor
   call setqflist(uniqedList)
 endfunction
+
+function! GitStatus()
+  let [a,m,r] = GitGutterGetHunkSummary()
+  return printf('+%d ~%d -%d', a, m, r)
+endfunction
+" set statusline+=%{GitStatus()}
+
+let g:vim_yaml_helper#auto_display_path = 0
