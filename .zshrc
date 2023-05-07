@@ -37,7 +37,7 @@ function ranger {
 }
 
 # Reevaluate prompt expressions every time prompt is displayed
-# setopt prompt_subst
+set -o PROMPT_SUBST
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -388,3 +388,17 @@ autoload -U +X bashcompinit && bashcompinit
 
 # Created by `pipx` on 2021-08-31 09:52:32
 export PATH="$PATH:/Users/dudev/.local/bin"
+
+# Prepend horizontal line to the prompt
+OLD_PS1=$PS1
+PS1=''
+
+# Set the text to green.
+PS1=$PS1'%F{%(#.white.green)}'
+
+# Add a horizontal line to the prompt.
+PS1=$PS1'${(r:$COLUMNS::-:)}'
+
+# Append remainder of the prompt (from theme).
+PS1=$PS1$OLD_PS1
+export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"

@@ -104,6 +104,9 @@ Plug 'lukas-reineke/indent-blankline.nvim', { 'branch': 'lua' }
 
 Plug 'pechorin/any-jump.vim'
 
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+
 " Git integration:
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
@@ -147,7 +150,7 @@ Plug '907th/vim-auto-save'
 " Plug 'folke/tokyonight.nvim'
 Plug 'morhetz/gruvbox'
 
-Plug 'psliwka/vim-smoothie'
+" Plug 'psliwka/vim-smoothie'
 Plug 'ap/vim-you-keep-using-that-word'
 Plug 'rhysd/git-messenger.vim'
 Plug 'rhysd/clever-f.vim'
@@ -174,7 +177,6 @@ Plug 'hrsh7th/nvim-cmp'
 " Plug 'andersevenrud/compe-tmux', { 'branch': 'compe' }
 
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
 
 Plug 'luukvbaal/stabilize.nvim'
 " Plug 'folke/trouble.nvim'
@@ -208,6 +210,17 @@ colorscheme gruvbox
 "Map leader to comma
 let mapleader = ","
 
+" Fzf
+" nnoremap <silent> <C-p> :Files!<CR>
+nnoremap <silent> <C-p> :GFiles!<CR>
+nnoremap <silent> <C-l> :History!<CR>
+nnoremap <silent> <C-\> :Lines!<CR>
+nnoremap <silent> <C-g> :GFiles!?<CR>
+
+let g:fzf_buffers_jump = 1
+
+let g:fzf_preview_command = 'bat --theme="ansi" --color=always --style=grid {-1}'
+
 " Easymotion
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
@@ -226,15 +239,23 @@ let g:strip_whitespace_on_save=1
 let g:strip_whitespace_confirm=0
 let g:strip_only_modified_lines=1
 
-" nnoremap \ :Rg!<SPACE>
-nnoremap \ :Telescope live_grep default_text=
-" xnoremap \ y:Rg!<SPACE><C-r>"<CR>
-xnoremap \ y:Telescope live_grep default_text=<C-r>"<CR>
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--disabled', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  let spec = fzf#vim#with_preview(spec, 'right', 'ctrl-/')
+  call fzf#vim#grep(initial_command, 1, spec, a:fullscreen)
+endfunction
+
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+nnoremap \ :Rg!<SPACE>
+xnoremap \ y:Rg!<SPACE><C-r>"<CR>
 
 let g:lightline = {
       \ 'colorscheme': 'tokyonight',
       \ }
-
 
 " This function has very bad performance!!!
 " let g:lightline = {
@@ -339,7 +360,7 @@ let g:slime_default_config = {"socket_name": "default", "target_pane": "5"}
 
 function! SendRspecToTmux() abort
   " execute 'silent SlimeSend1 be spring rspec ' . expand('%:p') . ':' . line('.')
-  execute 'silent SlimeSend1 sr ' . expand('%:p') . ':' . line('.')
+  execute 'silent SlimeSend1 bin/rails test ' . expand('%:p') . ':' . line('.')
 endfunction
 
 nmap <Leader>r :call SendRspecToTmux()<CR>
@@ -493,31 +514,6 @@ cmp.setup.cmdline(':', {
 
 -- Set up lspconfig.
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
-require('telescope').setup{
-  defaults = {
-    layout_strategy = 'horizontal',
-    layout_config = { width = 0.99, height = 0.99 },
-  },
-  extensions = {
-    fzf = {
-      fuzzy = true,                    -- false will only do exact matching
-      override_generic_sorter = true,  -- override the generic sorter
-      override_file_sorter = true,     -- override the file sorter
-      case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
-    }
-  }
-}
-
-require('telescope').load_extension('fzf')
-
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<C-p>', builtin.find_files, {})
-vim.keymap.set('n', '<C-l>', builtin.oldfiles, {})
-vim.keymap.set('n', '<Leader><Leader>', builtin.jumplist, {})
-vim.keymap.set('n', '<C-\\>', builtin.current_buffer_fuzzy_find, {})
-vim.keymap.set('n', '<Leader>l', builtin.resume, {})
--- :Telescope find_files default_text=keymaps
 
 require("zen-mode").setup {
   window = {
