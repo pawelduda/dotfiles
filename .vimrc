@@ -192,6 +192,9 @@ Plug 'folke/zen-mode.nvim'
 " Search improvements
 Plug 'kevinhwang91/nvim-hlslens'
 
+" Misc functionality
+Plug 'echasnovski/mini.nvim'
+
 call plug#end()
 
 " let g:indentLine_char_list = ['|', '¦', '┆', '┊']
@@ -587,6 +590,9 @@ vim.api.nvim_set_keymap('n', 'g*', [[g*<Cmd>lua require('hlslens').start()<CR>]]
 vim.api.nvim_set_keymap('n', 'g#', [[g#<Cmd>lua require('hlslens').start()<CR>]], kopts)
 
 vim.api.nvim_set_keymap('n', '<Leader>l', '<Cmd>noh<CR>', kopts)
+
+require('mini.colors').setup()
+require('mini.animate').setup()
 EOF
 
 au FileType rb,ruby let b:prettier_exec_cmd = "rbprettier"

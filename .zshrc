@@ -37,7 +37,7 @@ function ranger {
 }
 
 # Reevaluate prompt expressions every time prompt is displayed
-set -o PROMPT_SUBST
+# setopt prompt_subst
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -102,6 +102,8 @@ export PATH="/usr/local/heroku/bin:$PATH"
 export RESTIC_REPOSITORY='rclone:gdrive:/'
 
 alias fdfind='fdfind --hidden --no-ignore-vcs --color=always'
+alias fd=fdfind
+
 alias t=tmux
 alias tmux="env TERM=xterm-256color tmux new-session \; split-window -h \; split-window -v"
 alias ssh="TERM=xterm-256color ssh"
@@ -166,7 +168,7 @@ alias buffer="$BROWSER 'https://www.notion.so/THE-BUFFER-bf94a5386ba1473886f7772
 alias f='fzf'
 alias fzf='fzf -m --ansi --height 90% --layout=reverse --preview "batcat --color=always {} | head -n 100"'
 alias apti='sudo apt install'
-alias phone='adb connect 192.168.0.106:5555; scrcpy -S & disown'
+alias phone="scrcpy --tcpip=$PHONE_LOCAL_SOCKET --power-off-on-close --no-power-on --turn-screen-off --stay-awake --push-target='/sdcard/Download/via_scrcpy/' & nohup > /dev/null 2>&1"
 
 function fzf-launch {
   local CMD='xdg-open'
@@ -236,6 +238,9 @@ export FZF_ALT_C_COMMAND='fdfind --hidden --type d .'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_COMPLETION_TRIGGER="qwe"
 
+. $HOME/.asdf/asdf.sh
+. $HOME/.asdf/completions/asdf.bash
+
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 rga-fzf() {
@@ -252,6 +257,8 @@ rga-fzf() {
     echo "opening $file" &&
     xdg-open "$file"
 }
+
+bindkey "${key[Up]}" fzf-history-widget
 
 # fshow() {
 #   git log --graph --color=always \
