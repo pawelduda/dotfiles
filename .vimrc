@@ -26,10 +26,10 @@ map <C-j> :cn<CR>zz
 map <C-k> :cp<CR>zz
 
 " Automatically indent pasted text
-nnoremap p p=`]
+" nnoremap p p=`]
 "nmap =p p`[v`]==
 "nmap =P P`[v`]==
-"
+
 set sidescroll=5
 set scrolloff=1
 
@@ -204,9 +204,10 @@ if (has("termguicolors"))
  set termguicolors
 endif
 
-set background=dark
+set background=light
 let g:gruvbox_contrast_dark = 'hard'
-" let g:gruvbox_contrast_light = 'soft'
+let g:gruvbox_contrast_light = 'hard'
+
 " colorscheme tokyonight
 colorscheme gruvbox
 
@@ -222,7 +223,8 @@ nnoremap <silent> <C-g> :GFiles!?<CR>
 
 let g:fzf_buffers_jump = 1
 
-let g:fzf_preview_command = 'bat --theme="ansi" --color=always --style=grid {-1}'
+" let g:fzf_preview_command = 'bat --theme="ansi" --color=always --style=grid {-1}'
+" let g:fzf_preview_command = 'bat --theme="gruvbox-light" --color=always --style=grid {-1}'
 
 " Easymotion
 let g:EasyMotion_do_mapping = 0
