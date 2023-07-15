@@ -1,0 +1,64 @@
+# ./.tmuxinator.yml
+
+name: template
+root: ~/Programming
+
+# Optional tmux socket
+# socket_name: foo
+
+# Note that the pre and post options have been deprecated and will be replaced by
+# project hooks.
+
+# Project hooks
+
+# Runs on project start, always
+# on_project_start: spring server
+
+# Run on project start, the first time
+# on_project_first_start: command
+
+# Run on project start, after the first time
+# on_project_restart: command
+
+# Run on project exit ( detaching from tmux session )
+# on_project_exit: command
+
+# Run on project stop
+# on_project_stop: command
+
+# Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: rbenv shell 2.0.0-p247
+
+# Pass command line options to tmux. Useful for specifying a different tmux.conf.
+# tmux_options: -f ~/.tmux.mac.conf
+
+# Change the command to call tmux.  This can be used by derivatives/wrappers like byobu.
+# tmux_command: byobu
+
+# Specifies (by name or index) which window will be selected on project startup. If not set, the first window is used.
+# startup_window: editor
+
+# Specifies (by index) which pane of the specified window will be selected on project startup. If not set, the first pane is used.
+# startup_pane: 1
+
+# Controls whether the tmux session should be attached to automatically. Defaults to true.
+# attach: false
+
+windows:
+  - main:
+      root: ~/Programming
+      layout: ea55,401x104,0,0{143x104,0,0[143x33,0,0,0,143x9,0,34,3,143x9,0,44,4,143x9,0,54,12,143x20,0,64,18,143x19,0,85,19],257x104,144,0[257x70,144,0,5,257x3,144,71,21,257x3,144,75,22,257x25,144,79,17]}
+      panes:
+        - echo ''
+        - echo ''
+        - echo ''
+        - echo ''
+        - echo ''
+        - echo ''
+        - nvim
+        - echo ''
+        - echo ''
+
+  - htop:
+      panes:
+        - htop
