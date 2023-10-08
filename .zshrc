@@ -1,6 +1,9 @@
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM="xterm-kitty"
+export COLORTERM="truecolor"
+export BAT_THEME=gruvbox-dark
+
 # export TERM="xterm-256color"
 
 # if [ "$TERM" = "xterm-256color" ]; then
@@ -154,12 +157,9 @@ alias pbpaste='xclip -selection clipboard -o'
 alias cat='batcat'
 
 alias paint="kolourpaint"
-# alias svgbob='/home/dudev/.asdf/installs/rust/1.35.0/bin/svgbob'
 alias ag='rg'
 
 export BROWSER=chromium
-
-complete -o nospace -C /home/dudev/.asdf/installs/terraform/0.13.5/bin/terraform terraform
 
 alias pihole-admin="$BROWSER http://192.168.0.137/admin"
 alias trello="$BROWSER https://trello.com"
@@ -238,8 +238,9 @@ export FZF_ALT_C_COMMAND='fdfind --hidden --type d .'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_COMPLETION_TRIGGER="qwe"
 
-. $HOME/.asdf/asdf.sh
-. $HOME/.asdf/completions/asdf.bash
+# Broken after Mac update but doesn't seem to affect asdf nor its completions
+# . $HOME/.asdf/asdf.sh
+# . $HOME/.asdf/completions/asdf.bash
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 

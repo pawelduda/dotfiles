@@ -11,6 +11,8 @@ set nolazyredraw
 set nocompatible
 set noswapfile
 
+set eol
+
 set listchars=eol:¬,tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:·
 set list
 set shada='1000
@@ -22,8 +24,8 @@ nnoremap j gj
 nnoremap k gk
 
 " Navigate quickfix entries
-map <C-j> :cn<CR>zz
-map <C-k> :cp<CR>zz
+map <S-C-j> :cn<CR>zz
+map <S-C-k> :cp<CR>zz
 
 " Automatically indent pasted text
 " nnoremap p p=`]
@@ -71,6 +73,7 @@ set fileencoding=utf-8
 
 " Search:
 set hlsearch
+
 set ignorecase
 set smartcase
 set incsearch
@@ -199,12 +202,13 @@ call plug#end()
 
 " let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-if (has("termguicolors"))
+" let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+" if (has("termguicolors"))
  set termguicolors
-endif
+" endif
 
-set background=light
+" set background=light
+set background=dark
 let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_contrast_light = 'hard'
 
@@ -223,9 +227,6 @@ nnoremap <silent> <C-g> :GFiles!?<CR>
 
 let g:fzf_buffers_jump = 1
 
-" let g:fzf_preview_command = 'bat --theme="ansi" --color=always --style=grid {-1}'
-" let g:fzf_preview_command = 'bat --theme="gruvbox-light" --color=always --style=grid {-1}'
-
 " Easymotion
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
@@ -239,10 +240,10 @@ nmap <Leader>w <Plug>(easymotion-overwin-w)
 nmap <Leader>e <Plug>(easymotion-overwin-line)
 
 " Auto remove trailing whitespaces on save
-let g:better_whitespace_enabled=0
-let g:strip_whitespace_on_save=1
-let g:strip_whitespace_confirm=0
-let g:strip_only_modified_lines=1
+" let g:better_whitespace_enabled=0
+" let g:strip_whitespace_on_save=1
+" let g:strip_whitespace_confirm=0
+" let g:strip_only_modified_lines=1
 
 function! RipgrepFzf(query, fullscreen)
   let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
@@ -361,11 +362,12 @@ vnoremap . :normal .<CR>
 
 let g:slime_target = 'tmux'
 let g:slime_dont_ask_default = 1
-let g:slime_default_config = {"socket_name": "default", "target_pane": "5"}
+let g:slime_default_config = {"socket_name": "default", "target_pane": "6"}
 
 function! SendRspecToTmux() abort
   " execute 'silent SlimeSend1 be spring rspec ' . expand('%:p') . ':' . line('.')
-  execute 'silent SlimeSend1 bin/rails test ' . expand('%:p') . ':' . line('.')
+  " execute 'silent SlimeSend1 spring bin/rails test ' . expand('%:p') . ':' . line('.')
+  execute 'silent SlimeSend1 spring rails test ' . expand('%:p') . ':' . line('.')
 endfunction
 
 nmap <Leader>r :call SendRspecToTmux()<CR>
@@ -593,8 +595,14 @@ vim.api.nvim_set_keymap('n', 'g#', [[g#<Cmd>lua require('hlslens').start()<CR>]]
 
 vim.api.nvim_set_keymap('n', '<Leader>l', '<Cmd>noh<CR>', kopts)
 
+-- Prevent stripping EOL on save
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead", "BufWritePost" }, {
+  pattern = "*",
+  command = "setl fixeol"
+})
+
 require('mini.colors').setup()
-require('mini.animate').setup()
+-- require('mini.animate').setup()
 EOF
 
 au FileType rb,ruby let b:prettier_exec_cmd = "rbprettier"
@@ -655,3 +663,5 @@ endfunction
 " set statusline+=%{GitStatus()}
 
 let g:vim_yaml_helper#auto_display_path = 0
+
+

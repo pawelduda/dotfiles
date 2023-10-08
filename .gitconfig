@@ -21,9 +21,8 @@
         decorations = true
         line-numbers = true
         navigate = true
-        syntax-theme = base16
-        plus-style = syntax "#012800"
-        minus-style = syntax "#3f0001"
+        syntax-theme = gruvbox-dark
+        light = false
 [merge]
         conflictstyle = diff3
 [diff]
