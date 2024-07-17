@@ -86,7 +86,7 @@ set smarttab
 set softtabstop=2
 
 " Ruler:
-set ruler
+" set ruler
 set colorcolumn=120
 
 " Live preview of Ex commands
@@ -136,6 +136,8 @@ Plug 'tpope/vim-endwise'
 
 Plug 'lmeijvogel/vim-yaml-helper'
 
+Plug 'Einenlum/yaml-revealer'
+
 Plug 'kassio/neoterm'
 "Plug 'benekastah/neomake'
 
@@ -180,6 +182,8 @@ Plug 'hrsh7th/nvim-cmp'
 " Plug 'andersevenrud/compe-tmux', { 'branch': 'compe' }
 
 Plug 'nvim-lua/plenary.nvim'
+Plug 'pmizio/typescript-tools.nvim'
+Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 
 Plug 'luukvbaal/stabilize.nvim'
 " Plug 'folke/trouble.nvim'
@@ -198,6 +202,7 @@ Plug 'kevinhwang91/nvim-hlslens'
 " Misc functionality
 Plug 'echasnovski/mini.nvim'
 
+Plug 'godlygeek/tabular'
 call plug#end()
 
 " let g:indentLine_char_list = ['|', '¦', '┆', '┊']
@@ -302,8 +307,8 @@ if has('nvim')
 endif
 
 " Check file change every 4 seconds ('CursorHold') and reload the buffer upon detecting change
-set autoread
-au CursorHold * checktime
+" set autoread
+" au CursorHold * checktime
 
 " Tab completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -386,6 +391,7 @@ nnoremap K kJ
 
 lua <<EOF
 require('leap').set_default_keymaps()
+local luasnip = require('luasnip')
 
 require("stabilize").setup()
 require("mason").setup()
@@ -462,6 +468,8 @@ nvim_lsp.solargraph.setup {
   }
 }
 
+require("typescript-tools").setup {}
+
 local servers = { "bashls", "solargraph" }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
@@ -478,6 +486,11 @@ vim.o.completeopt = "menu,menuone,noselect"
 local cmp = require'cmp'
 
 cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
   window = {
     completion = cmp.config.window.bordered(),
     documentation = cmp.config.window.bordered(),
@@ -507,15 +520,6 @@ cmp.setup.filetype('gitcommit', {
     { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
   }, {
     { name = 'buffer' },
-  })
-})
-
-cmp.setup.cmdline(':', {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = cmp.config.sources({
-    { name = 'path' }
-  }, {
-    { name = 'cmdline' }
   })
 })
 
@@ -603,6 +607,22 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead", "BufWritePost" }, {
 
 require('mini.colors').setup()
 -- require('mini.animate').setup()
+
+-- Triger `autoread` when files changes on disk
+-- https://unix.stackexchange.com/questions/149209/refresh-changed-content-of-file-opened-in-vim/383044#383044
+-- https://vi.stackexchange.com/questions/13692/prevent-focusgained-autocmd-running-in-command-line-editing-mode
+vim.api.nvim_create_autocmd({'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI'}, {
+  pattern = '*',
+  command = "if mode() !~ '\v(c|r.?|!|t)' && getcmdwintype() == '' | checktime | endif",
+})
+
+-- Notification after file change
+-- https://vi.stackexchange.com/questions/13091/autocmd-event-for-autoread
+vim.api.nvim_create_autocmd({'FileChangedShellPost'}, {
+  pattern = '*',
+  command = "echohl WarningMsg | echo 'File changed on disk. Buffer reloaded.' | echohl None",
+})
+
 EOF
 
 au FileType rb,ruby let b:prettier_exec_cmd = "rbprettier"

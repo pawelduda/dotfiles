@@ -7,10 +7,10 @@
 ; [commit]
 	; gpgsign = true
 [core]
-        editor = nvim
-        pager = delta
-	excludesfile = /home/dudev/.gitignore
-	attributesfile = /home/dudev/.gitattributes
+	editor = vim -u NONE
+        ; pager = delta
+	excludesfile = /Users/dudev/.gitignore
+	attributesfile = /Users/dudev/.gitattributes
 [interactive]
         diffFilter = delta --color-only
 [pull]
@@ -26,8 +26,19 @@
 [merge]
         conflictstyle = diff3
 [diff]
+        external = difft
         colorMoved = default
 [rerere]
 	enabled = true
 [push]
 	autoSetupRemote = true
+
+# difftastic added
+[tools]
+        tool = difftastic
+[difftool]
+        prompt = false
+[difftool "difftastic"]
+        cmd = difft "$LOCAL" "$REMOTE"
+[pager]
+        difftool = true

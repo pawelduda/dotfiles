@@ -14,12 +14,12 @@ export BAT_THEME=gruvbox-dark
 # fi
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/dudev/.oh-my-zsh
+export ZSH=/Users/dudev/.oh-my-zsh
 
 function manswitch() { man $1 | less -p "$2"; }
 
 ZSH_THEME="materialshell"
-#
+
 # Don't ask whether to import .env file every time I change dir
 ZSH_DOTENV_PROMPT=false
 
@@ -137,7 +137,8 @@ function git_checkout_master_rails() (
 )
 alias gcm_rails=git_checkout_master_rails
 
-export EDITOR="~/nvim-macos/bin/nvim"
+export EDITOR=/Users/dudev/nvim-macos/bin/nvim
+# export EDITOR="~/nvim-macos/bin/nvim"
 alias nvim="~/nvim-macos/bin/nvim"
 alias vim_diesel="TERM='' nvim"
 alias vim="TERM='' nvim"
@@ -150,11 +151,11 @@ alias sso="google site:stackoverflow.com"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
 
-alias pbcopy='xclip -selection clipboard'
-alias pbpaste='xclip -selection clipboard -o'
+# alias pbcopy='xclip -selection clipboard'
+# alias pbpaste='xclip -selection clipboard -o'
 
 # alias notwork?='~/prettyping onet.pl'
-alias cat='batcat'
+alias cat='bat'
 
 alias paint="kolourpaint"
 alias ag='rg'
@@ -166,7 +167,7 @@ alias trello="$BROWSER https://trello.com"
 alias en-pl="$BROWSER 'https://docs.google.com/spreadsheets/d/1DuI1tdArpFMLZBXbpOlRv3L0K_0EqIBnC2HJTAgpj-M/edit#gid=0'"
 alias buffer="$BROWSER 'https://www.notion.so/THE-BUFFER-bf94a5386ba1473886f77725340b4e71'"
 alias f='fzf'
-alias fzf='fzf -m --ansi --height 90% --layout=reverse --preview "batcat --color=always {} | head -n 100"'
+alias fzf='fzf -m --ansi --height 90% --layout=reverse --preview "bat --color=always {} | head -n 100"'
 alias apti='sudo apt install'
 alias phone="scrcpy --tcpip=$PHONE_LOCAL_SOCKET --power-off-on-close --no-power-on --turn-screen-off --stay-awake --push-target='/sdcard/Download/via_scrcpy/' & nohup > /dev/null 2>&1"
 
@@ -239,8 +240,8 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_COMPLETION_TRIGGER="qwe"
 
 # Broken after Mac update but doesn't seem to affect asdf nor its completions
-# . $HOME/.asdf/asdf.sh
-# . $HOME/.asdf/completions/asdf.bash
+. $HOME/.asdf/asdf.sh
+. $HOME/.asdf/completions/asdf.bash
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
@@ -300,7 +301,7 @@ alias unmute3='pactl set-sink-mute 3 0'
 alias subscribe-to-audio-events='pactl subscribe'
 
 _backup_prepare () {
-  export $(sudo cat /home/dudev/.restic_cron_creds | xargs)
+  export $(sudo cat /Users/dudev/.restic_cron_creds | xargs)
 }
 
 _backup_remove_old_snapshots () {
@@ -413,3 +414,7 @@ precmd() { print "" }
 PS1=$PS1$OLD_PS1
 
 export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"
+
+# Fix spring test runner erroring out with:
+# objc[13777]: +[__NSCFConstantString initialize] may have been in progress in another thread when fork() was called...
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
