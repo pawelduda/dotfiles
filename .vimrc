@@ -130,7 +130,7 @@ Plug 'Shougo/context_filetype.vim'
 " Comments:
 Plug 'tpope/vim-commentary'
 
-Plug 'ntpeters/vim-better-whitespace'
+" Plug 'ntpeters/vim-better-whitespace'
 
 Plug 'tpope/vim-endwise'
 
@@ -163,9 +163,9 @@ Plug 'jpalardy/vim-slime'
 
 Plug 'francoiscabrol/ranger.vim'
 
-Plug 'neovim/nvim-lspconfig'
-Plug 'williamboman/mason.nvim'
-Plug 'williamboman/mason-lspconfig.nvim'
+" Plug 'neovim/nvim-lspconfig'
+" Plug 'williamboman/mason-lspconfig.nvim'
+" Plug 'williamboman/mason.nvim'
 
 " Useful status updates for LSP
 Plug 'j-hui/fidget.nvim'
@@ -173,7 +173,7 @@ Plug 'j-hui/fidget.nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-treesitter/nvim-treesitter-context'
 
-Plug 'hrsh7th/cmp-nvim-lsp'
+" Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 " Plug 'hrsh7th/cmp-cmdline'
@@ -188,7 +188,7 @@ Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 Plug 'luukvbaal/stabilize.nvim'
 " Plug 'folke/trouble.nvim'
 
-Plug 'folke/lsp-colors.nvim'
+" Plug 'folke/lsp-colors.nvim'
 
 " Solidity
 Plug 'thesis/vim-solidity'
@@ -203,6 +203,9 @@ Plug 'kevinhwang91/nvim-hlslens'
 Plug 'echasnovski/mini.nvim'
 
 Plug 'godlygeek/tabular'
+
+Plug 'chrisgrieser/nvim-rip-substitute'
+Plug 'github/copilot.vim'
 call plug#end()
 
 " let g:indentLine_char_list = ['|', '¦', '┆', '┊']
@@ -294,8 +297,8 @@ let g:gitgutter_grep = 'rg'
 
 nnoremap <leader>gg :GitGutterPreviewHunk<CR>
 
-set cursorcolumn
-set cursorline
+set nocursorcolumn
+set nocursorline
 set re=1
 
 " Neomake on save
@@ -390,11 +393,26 @@ set textwidth=0 wrapmargin=0
 nnoremap K kJ
 
 lua <<EOF
-require('leap').set_default_keymaps()
-local luasnip = require('luasnip')
+-- vim.keymap.set(
+  -- { "n", "x" },
+  -- "<leader>fs",
+  -- function() require("rip-substitute").sub() end,
+  -- { desc = " rip substitute" }
+-- )
+
+-- require('leap').set_default_keymaps()
+-- local luasnip = require('luasnip')
 
 require("stabilize").setup()
-require("mason").setup()
+--require("mason").setup()
+-- require("mason-lspconfig").setup({
+    -- ensure_installed = { "elixirls" }
+-- })
+-- require('lspconfig').elixirls.setup({
+    -- cmd = { "elixir-ls" },
+    -- filetypes = { "elixir", "eex", "heex", "surface" }
+-- })
+
 
 -- vim.g.tokyonight_style = "storm"
 -- vim.g.tokyonight_italic_functions = true
@@ -423,57 +441,38 @@ require'nvim-treesitter.configs'.setup {
 }
 
 require'treesitter-context'.setup{
-  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+  enable = false, -- Enable this plugin (Can be enabled/disabled later via commands)
 }
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] =
-vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-  underline = false,
-  virtual_text = { spacing = 10 },
-  signs = false,
-  update_in_insert = false
-})
+-- vim.lsp.handlers["textDocument/publishDiagnostics"] =
+-- vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+  -- underline = false,
+  -- virtual_text = false,
+  -- signs = false,
+  -- update_in_insert = false
+-- })
 
-local nvim_lsp = require('lspconfig')
+-- local nvim_lsp = require('lspconfig')
 
 -- Finally, let's initialize the Elixir language server
 
 -- Replace the following with the path to your installation
-local path_to_elixirls = vim.fn.expand("~/Programming/elixir-ls/rel/language_server.sh")
-
-nvim_lsp.elixirls.setup({
-  cmd = {path_to_elixirls},
-  capabilities = capabilities,
-  on_attach = on_attach,
-  settings = {
-  elixirLS = {
-    -- I choose to disable dialyzer for personal reasons, but
-    -- I would suggest you also disable it unless you are well
-    -- aquainted with dialzyer and know how to use it.
-    dialyzerEnabled = false,
-    -- I also choose to turn off the auto dep fetching feature.
-    -- It often get's into a weird state that requires deleting
-    -- the .elixir_ls directory and restarting your editor.
-    fetchDeps = false
-    }
-  }
-})
-
+-- local path_to_elixirls = vim.fn.expand("~/Programming/elixir-ls/rel/language_server.sh")
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
 
-nvim_lsp.solargraph.setup {
-  flags = {
-    debounce_text_changes = 150,
-  }
-}
+-- nvim_lsp.solargraph.setup {
+  -- flags = {
+    -- debounce_text_changes = 150,
+  -- }
+-- }
 
 require("typescript-tools").setup {}
 
-local servers = { "bashls", "solargraph" }
-for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup { on_attach = on_attach }
-end
+-- local servers = { "bashls", "solargraph" }
+-- for _, lsp in ipairs(servers) do
+  -- nvim_lsp[lsp].setup { on_attach = on_attach }
+-- end
 
  --require("trouble").setup {
     --icons = false;
@@ -483,36 +482,36 @@ end
 vim.o.completeopt = "menu,menuone,noselect"
 
 -- Set up nvim-cmp.
-local cmp = require'cmp'
+--local cmp = require'cmp'
 
-cmp.setup({
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  window = {
-    completion = cmp.config.window.bordered(),
-    documentation = cmp.config.window.bordered(),
-  },
-  mapping = cmp.mapping.preset.insert({
-    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<Tab>'] = cmp.mapping.select_next_item(),
-    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-  }),
-  sources = cmp.config.sources({
-    { name = 'nvim_lsp' },
+--cmp.setup({
+  --snippet = {
+    --expand = function(args)
+      --luasnip.lsp_expand(args.body)
+    --end,
+  --},
+  --window = {
+    --completion = cmp.config.window.bordered(),
+    --documentation = cmp.config.window.bordered(),
+  --},
+  --mapping = cmp.mapping.preset.insert({
+    --['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    --['<C-f>'] = cmp.mapping.scroll_docs(4),
+    --['<Tab>'] = cmp.mapping.select_next_item(),
+    ----['<S-Tab>'] = cmp.mapping.select_prev_item(),
+    --['<C-Space>'] = cmp.mapping.complete(),
+    --['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  --}),
+  --sources = cmp.config.sources({
+    --{ name = 'nvim_lsp' },
     -- { name = 'vsnip' }, -- For vsnip users.
     -- { name = 'luasnip' }, -- For luasnip users.
     -- { name = 'ultisnips' }, -- For ultisnips users.
     -- { name = 'snippy' }, -- For snippy users.
-  }, {
-    { name = 'buffer' },
-  })
-})
+  --}, {
+    --{ name = 'buffer' },
+  --})
+--})
 
 -- Set configuration for specific filetype.
 cmp.setup.filetype('gitcommit', {
@@ -524,7 +523,7 @@ cmp.setup.filetype('gitcommit', {
 })
 
 -- Set up lspconfig.
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
+ --local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 require("zen-mode").setup {
   window = {
@@ -623,6 +622,11 @@ vim.api.nvim_create_autocmd({'FileChangedShellPost'}, {
   command = "echohl WarningMsg | echo 'File changed on disk. Buffer reloaded.' | echohl None",
 })
 
+-- Accept Copilot suggestion with right arrow key
+vim.cmd([[
+  inoremap <expr> <Right> copilot#Accept("\<Right>")
+]])
+
 EOF
 
 au FileType rb,ruby let b:prettier_exec_cmd = "rbprettier"
@@ -683,5 +687,4 @@ endfunction
 " set statusline+=%{GitStatus()}
 
 let g:vim_yaml_helper#auto_display_path = 0
-
 
