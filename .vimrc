@@ -36,6 +36,7 @@ set sidescroll=5
 set scrolloff=1
 
 set shortmess-=S
+set shortmess+=I
 " Mouse support
 
 set timeoutlen=1000 ttimeoutlen=0
@@ -96,7 +97,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'xolox/vim-misc'
 
 " Plug 'easymotion/vim-easymotion'
-Plug 'ggandor/leap.nvim'
+" Plug 'ggandor/leap.nvim'
 
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
@@ -104,8 +105,6 @@ Plug 'tpope/vim-repeat'
 Plug 'mbbill/undotree'
 
 Plug 'lukas-reineke/indent-blankline.nvim', { 'branch': 'lua' }
-
-Plug 'pechorin/any-jump.vim'
 
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -134,9 +133,9 @@ Plug 'ntpeters/vim-better-whitespace'
 
 Plug 'tpope/vim-endwise'
 
-Plug 'lmeijvogel/vim-yaml-helper'
+" Plug 'lmeijvogel/vim-yaml-helper'
 
-Plug 'Einenlum/yaml-revealer'
+" Plug 'Einenlum/yaml-revealer'
 
 Plug 'kassio/neoterm'
 "Plug 'benekastah/neomake'
@@ -170,7 +169,7 @@ Plug 'williamboman/mason-lspconfig.nvim'
 " Useful status updates for LSP
 Plug 'j-hui/fidget.nvim'
 
-Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter', { 'branch': 'master' }
 Plug 'nvim-treesitter/nvim-treesitter-context'
 
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -262,6 +261,7 @@ endfunction
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
 nnoremap \ :Rg!<SPACE>
+nnoremap ]\ :Rg! <C-r>=expand('<cword>')<CR><CR>
 xnoremap \ y:Rg!<SPACE><C-r>"<CR>
 
 let g:lightline = {
@@ -290,13 +290,13 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 set signcolumn=auto
 
 let g:gitgutter_preview_win_floating = 1
-let g:gitgutter_grep = 'rg'
 
 nnoremap <leader>gg :GitGutterPreviewHunk<CR>
 
-set cursorcolumn
+" Disable due to potential perf impact
+set nocursorcolumn
 set cursorline
-set re=1
+set re=0
 
 " Neomake on save
 "autocmd! BufWritePost * Neomake
@@ -309,9 +309,6 @@ endif
 " Check file change every 4 seconds ('CursorHold') and reload the buffer upon detecting change
 " set autoread
 " au CursorHold * checktime
-
-" Tab completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " Center screen on next/previous selection.
 nmap <silent> n /<CR>zz
@@ -390,17 +387,38 @@ set textwidth=0 wrapmargin=0
 nnoremap K kJ
 
 lua <<EOF
-require('leap').set_default_keymaps()
+-- require('leap').set_default_keymaps()
 local luasnip = require('luasnip')
 
+-- Silence benign NO_RESULT_CALLBACK_FOUND errors: nvim cancels in-flight
+-- requests (diagnostics, semantic tokens) on edit and drops the callback,
+-- but ruby-lsp may have already sent the result. The orphaned response is
+-- harmless. Suppress only this error code; all other LSP errors pass through.
+do
+  local Client = require('vim.lsp.client')
+  local orig_write_error = Client.write_error
+  Client.write_error = function(self, code, err)
+    if code == vim.lsp.client_errors.NO_RESULT_CALLBACK_FOUND then
+      return
+    end
+    return orig_write_error(self, code, err)
+  end
+end
+
 require("stabilize").setup()
+require("fidget").setup()
 require("mason").setup()
 
 -- vim.g.tokyonight_style = "storm"
 -- vim.g.tokyonight_italic_functions = true
 
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ensure_installed = {
+    "ruby", "javascript", "typescript", "tsx",
+    "elixir", "heex", "eex", "go", "gomod", "lua", "solidity",
+    "json", "yaml", "html", "css", "scss", "bash",
+    "markdown", "markdown_inline", "vim", "vimdoc", "regex", "git_config",
+  },
   ignore_install = { "phpdoc" }, -- List of parsers to ignore installing
   highlight = {
     enable = true,
@@ -422,58 +440,63 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 
-require'treesitter-context'.setup{
-  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-}
+require("treesitter-context").setup({ enable = false })
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] =
-vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+vim.diagnostic.config({
   underline = false,
   virtual_text = { spacing = 10 },
-  signs = false,
-  update_in_insert = false
+  signs = true,
+  update_in_insert = false,
 })
 
-local nvim_lsp = require('lspconfig')
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(args)
+    local opts = { buffer = args.buf }
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', '<C-]>', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', '<C-k>', vim.lsp.buf.hover, opts)
+  end,
+})
 
--- Finally, let's initialize the Elixir language server
-
--- Replace the following with the path to your installation
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local path_to_elixirls = vim.fn.expand("~/Programming/elixir-ls/rel/language_server.sh")
 
-nvim_lsp.elixirls.setup({
+vim.lsp.config('elixirls', {
   cmd = {path_to_elixirls},
   capabilities = capabilities,
-  on_attach = on_attach,
   settings = {
-  elixirLS = {
-    -- I choose to disable dialyzer for personal reasons, but
-    -- I would suggest you also disable it unless you are well
-    -- aquainted with dialzyer and know how to use it.
-    dialyzerEnabled = false,
-    -- I also choose to turn off the auto dep fetching feature.
-    -- It often get's into a weird state that requires deleting
-    -- the .elixir_ls directory and restarting your editor.
-    fetchDeps = false
+    elixirLS = {
+      dialyzerEnabled = false,
+      fetchDeps = false,
     }
   }
 })
 
--- Use a loop to conveniently call 'setup' on multiple servers and
--- map buffer local keybindings when the language server attaches
+vim.lsp.config('ruby_lsp', {
+  cmd = { 'bundle', 'exec', 'ruby-lsp' },
+  capabilities = capabilities,
+})
 
-nvim_lsp.solargraph.setup {
-  flags = {
-    debounce_text_changes = 150,
-  }
+vim.lsp.config('bashls', {
+  capabilities = capabilities,
+})
+
+vim.lsp.enable({'elixirls', 'ruby_lsp', 'bashls'})
+
+require("typescript-tools").setup {
+  capabilities = capabilities,
+  settings = {
+    tsserver_max_memory = 12288,
+    tsserver_file_preferences = {
+      includePackageJsonAutoImports = "off",  -- reduces memory from scanning all packages
+    },
+  },
 }
-
-require("typescript-tools").setup {}
-
-local servers = { "bashls", "solargraph" }
-for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup { on_attach = on_attach }
-end
 
  --require("trouble").setup {
     --icons = false;
@@ -522,9 +545,6 @@ cmp.setup.filetype('gitcommit', {
     { name = 'buffer' },
   })
 })
-
--- Set up lspconfig.
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 require("zen-mode").setup {
   window = {
@@ -650,6 +670,9 @@ set switchbuf="usetab"
 
 set nofoldenable
 
+" Disable ctags entirely — use LSP for all symbol navigation
+set tags=
+
 " This is only needed for parcel
 set backupcopy=yes
 
@@ -683,5 +706,6 @@ endfunction
 " set statusline+=%{GitStatus()}
 
 let g:vim_yaml_helper#auto_display_path = 0
+
 
 
