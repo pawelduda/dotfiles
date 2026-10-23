@@ -1,6 +1,5 @@
 set shell=/bin/zsh
 
-let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 0
 set guicursor=
 
 set title
@@ -8,7 +7,6 @@ set title
 " Removed in Neovim, keeping this for backwards compatibility
 set mouse=a
 set nolazyredraw
-set nocompatible
 set noswapfile
 
 set eol
@@ -16,8 +14,6 @@ set eol
 set listchars=eol:¬,tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:·
 set list
 set shada='1000
-
-" Scroll horizontally by 1 character instead of default half screen
 
 " Move vertically by rows rather than lines (useful with long lines + wrap on)
 nnoremap j gj
@@ -37,7 +33,6 @@ set scrolloff=1
 
 set shortmess-=S
 set shortmess+=I
-" Mouse support
 
 set timeoutlen=1000 ttimeoutlen=0
 
@@ -55,11 +50,8 @@ set showbreak=▶
 set textwidth=120
 set noshowmatch
 
-" Allow backspacing over everything in insert mode
-set backspace=indent,eol,start
-
 " No beep or flash
-autocmd VimEnter * set vb t_vb=
+set belloff=all
 
 set hidden
 set sessionoptions=resize,winpos,winsize,buffers,tabpages,
@@ -68,8 +60,6 @@ set splitright
 set splitbelow
 
 " Encoding:
-set langmenu=en_US.UTF-8
-set encoding=utf-8
 set fileencoding=utf-8
 
 " Search:
@@ -82,7 +72,6 @@ set incsearch
 set autoindent
 set expandtab
 set shiftwidth=2
-set smartindent
 set smarttab
 set softtabstop=2
 
@@ -94,7 +83,6 @@ set colorcolumn=120
 set inccommand=nosplit
 
 call plug#begin('~/.vim/plugged')
-Plug 'xolox/vim-misc'
 
 " Plug 'easymotion/vim-easymotion'
 " Plug 'ggandor/leap.nvim'
@@ -104,13 +92,13 @@ Plug 'tpope/vim-repeat'
 
 Plug 'mbbill/undotree'
 
-Plug 'lukas-reineke/indent-blankline.nvim', { 'branch': 'lua' }
+Plug 'lukas-reineke/indent-blankline.nvim'
 
-Plug 'junegunn/fzf.vim'
+Plug 'ibhagwan/fzf-lua', { 'branch': 'main' }
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 " Git integration:
-Plug 'airblade/vim-gitgutter'
+Plug 'lewis6991/gitsigns.nvim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'iberianpig/tig-explorer.vim'
@@ -122,9 +110,6 @@ Plug 'rbgrouleff/bclose.vim'
 
 " TODO:
 Plug 'awetzel/elixir.nvim'
-Plug 'Shougo/echodoc.vim'
-
-Plug 'Shougo/context_filetype.vim'
 
 " Comments:
 Plug 'tpope/vim-commentary'
@@ -184,7 +169,6 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'pmizio/typescript-tools.nvim'
 Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 
-Plug 'luukvbaal/stabilize.nvim'
 " Plug 'folke/trouble.nvim'
 
 Plug 'folke/lsp-colors.nvim'
@@ -222,26 +206,15 @@ colorscheme gruvbox
 "Map leader to comma
 let mapleader = ","
 
-" Fzf
-" nnoremap <silent> <C-p> :Files!<CR>
-nnoremap <silent> <C-p> :GFiles!<CR>
-nnoremap <silent> <C-l> :History!<CR>
-nnoremap <silent> <C-\> :Lines!<CR>
-nnoremap <silent> <C-g> :GFiles!?<CR>
+" fzf-lua
+nnoremap <silent> <C-p> :lua require('fzf-lua').git_files()<CR>
+nnoremap <silent> <C-l> :lua require('fzf-lua').oldfiles({ sort_lastused = true, include_current_session = true, fzf_opts = { ['--no-sort'] = '' } })<CR>
+nnoremap <silent> <C-\> :lua require('fzf-lua').lines()<CR>
+nnoremap <silent> <C-g> :lua require('fzf-lua').git_status()<CR>
 
-let g:fzf_buffers_jump = 1
-
-" Easymotion
-let g:EasyMotion_do_mapping = 0
-let g:EasyMotion_smartcase = 1
-
-map  <Leader>f <Plug>(easymotion-f)
-nmap <Leader>f <Plug>(easymotion-overwin-f)
-
-map  <Leader>w <Plug>(easymotion-bd-w)
-nmap <Leader>w <Plug>(easymotion-overwin-w)
-
-nmap <Leader>e <Plug>(easymotion-overwin-line)
+nnoremap \ :lua require('fzf-lua').live_grep()<CR>
+nnoremap ]\ :lua require('fzf-lua').grep_cword()<CR>
+xnoremap \ :lua require('fzf-lua').grep_visual()<CR>
 
 " Auto remove trailing whitespaces on save
 " let g:better_whitespace_enabled=0
@@ -249,49 +222,12 @@ nmap <Leader>e <Plug>(easymotion-overwin-line)
 " let g:strip_whitespace_confirm=0
 " let g:strip_only_modified_lines=1
 
-function! RipgrepFzf(query, fullscreen)
-  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
-  let initial_command = printf(command_fmt, shellescape(a:query))
-  let reload_command = printf(command_fmt, '{q}')
-  let spec = {'options': ['--disabled', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
-  let spec = fzf#vim#with_preview(spec, 'right', 'ctrl-/')
-  call fzf#vim#grep(initial_command, 1, spec, a:fullscreen)
-endfunction
-
-command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
-
-nnoremap \ :Rg!<SPACE>
-nnoremap ]\ :Rg! <C-r>=expand('<cword>')<CR><CR>
-xnoremap \ y:Rg!<SPACE><C-r>"<CR>
-
-let g:lightline = {
-      \ 'colorscheme': 'tokyonight',
-      \ }
-
-" This function has very bad performance!!!
-" let g:lightline = {
-"       \ 'colorscheme': 'tokyonight',
-"       \ 'component_function': {
-"         \   'filename': 'LightlineFilename'
-"         \ },
-"         \ }
-
-" function! LightlineFilename()
-"   let root = fnamemodify(get(b:, 'git_dir'), ':h')
-"   let path = expand('%:p')
-"   if path[:len(root)-1] ==# root
-"     return path[len(root)+1:]
-"   endif
-"   return expand('%')
-" endfunction
-
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 
 set signcolumn=auto
 
-let g:gitgutter_preview_win_floating = 1
-
-nnoremap <leader>gg :GitGutterPreviewHunk<CR>
+nnoremap <leader>gg :lua require('gitsigns').preview_hunk()<CR>
+nnoremap <leader>gh :Gitsigns setqflist all<CR>
 
 " Disable due to potential perf impact
 set nocursorcolumn
@@ -390,6 +326,20 @@ lua <<EOF
 -- require('leap').set_default_keymaps()
 local luasnip = require('luasnip')
 
+-- Suppress ruby-lsp-rails "pending migrations" showMessageRequest prompt.
+-- Matched specifically on the "Run Migrations" action title that the addon injects.
+local orig_show_message_request = vim.lsp.handlers["window/showMessageRequest"]
+vim.lsp.handlers["window/showMessageRequest"] = function(err, result, ctx, config)
+  if result and result.actions then
+    for _, action in ipairs(result.actions) do
+      if action.title == "Run Migrations" then
+        return vim.NIL
+      end
+    end
+  end
+  return orig_show_message_request(err, result, ctx, config)
+end
+
 -- Silence benign NO_RESULT_CALLBACK_FOUND errors: nvim cancels in-flight
 -- requests (diagnostics, semantic tokens) on edit and drops the callback,
 -- but ruby-lsp may have already sent the result. The orphaned response is
@@ -405,9 +355,27 @@ do
   end
 end
 
-require("stabilize").setup()
 require("fidget").setup()
 require("mason").setup()
+
+require('fzf-lua').setup({
+  defaults = {
+  },
+  previewers = {
+    builtin = {
+      syntax_limit_b = 1024 * 100, -- disable treesitter preview above 100KB
+      treesitter = { enabled = true, disabled = { "markdown", "markdown_inline" } },
+    },
+  },
+  winopts = {
+    fullscreen = true,
+    preview = {
+      default = 'builtin', -- use the Neovim buffer previewer
+    },
+  },
+})
+
+vim.o.splitkeep = "screen"
 
 -- vim.g.tokyonight_style = "storm"
 -- vim.g.tokyonight_italic_functions = true
@@ -444,8 +412,8 @@ require("treesitter-context").setup({ enable = false })
 
 vim.diagnostic.config({
   underline = false,
-  virtual_text = { spacing = 10 },
-  signs = true,
+  virtual_text = false,
+  signs = false,
   update_in_insert = false,
 })
 
@@ -643,9 +611,75 @@ vim.api.nvim_create_autocmd({'FileChangedShellPost'}, {
   command = "echohl WarningMsg | echo 'File changed on disk. Buffer reloaded.' | echohl None",
 })
 
+require('gitsigns').setup({
+  current_line_blame = true,
+  current_line_blame_opts = {
+    delay = 250,
+    virt_text_pos = 'eol',
+  },
+})
+
+vim.api.nvim_set_hl(0, 'GitSignsCurrentLineBlame', { fg = '#a89984', italic = true })
+
+-- Hunk picker (<leader>gs): one entry per hunk (fzf-lua's git_hunks lists every changed line)
+local function git_hunk_header_entry(x, opts)
+  local S = opts.__hunk_header_state or {}
+  opts.__hunk_header_state = S
+  local l = require('fzf-lua.utils').strip_ansi_coloring(x)
+  if l:match('^diff ') then
+    S.filename, S.in_header = nil, true
+    return
+  end
+  if S.in_header then
+    local file = l:match('^%+%+%+ %l/(.*)')
+    if file then S.filename = file end
+  end
+  local line = l:match('^@@ %-%d+,?%d* %+(%d+)')
+  if line then
+    S.in_header = false
+    if S.filename then
+      return string.format('%s:%d:%s', require('fzf-lua.make_entry').file(S.filename, opts), math.max(tonumber(line), 1), x)
+    end
+  end
+end
+
+vim.keymap.set('n', '<leader>gs', function()
+  require('fzf-lua').git_hunks({
+    cmd = 'git --no-pager diff --color=always -U0 HEAD',
+    multiprocess = false,
+    fn_transform = git_hunk_header_entry,
+  })
+end, { desc = 'Git hunks picker, one entry per hunk' })
+
+-- Copy full Ruby namespace of current file to clipboard (<leader>yn)
+local ruby_app_dirs = {
+  'app/services/', 'app/models/', 'app/controllers/',
+  'app/jobs/', 'app/queries/', 'app/mappers/', 'app/validators/',
+}
+vim.keymap.set('n', '<leader>yn', function()
+  local filepath = vim.fn.expand('%:p')
+  local relative = nil
+  for _, dir in ipairs(ruby_app_dirs) do
+    local _, e = filepath:find(dir, 1, true)
+    if e then relative = filepath:sub(e + 1); break end
+  end
+  if not relative then
+    vim.notify('[ruby_ns] No app/ directory found in path', vim.log.levels.WARN)
+    return
+  end
+  relative = relative:gsub('%.rb$', '')
+  local parts = vim.split(relative, '/')
+  local ns = table.concat(vim.tbl_map(function(s)
+    s = s:sub(1, 1):upper() .. s:sub(2)
+    return s:gsub('_(.)', function(c) return c:upper() end)
+  end, parts), '::')
+  vim.fn.setreg('+', ns)
+  vim.notify('[ruby_ns] Copied: ' .. ns, vim.log.levels.INFO)
+end, { desc = 'Copy Ruby namespace to clipboard' })
+
 EOF
 
-au FileType rb,ruby let b:prettier_exec_cmd = "rbprettier"
+au FileType ruby let b:prettier_exec_cmd = "rbprettier"
 
 let g:ranger_replace_netrw = 1
 let g:ranger_map_keys = 0
@@ -666,7 +700,7 @@ map <silent><Leader>v :call WriteRoomToggle()<CR>
 
 noremap <Leader>q :tab split<CR>
 
-set switchbuf="usetab"
+set switchbuf=usetab
 
 set nofoldenable
 
@@ -698,14 +732,3 @@ function SortUniqQFList()
   endfor
   call setqflist(uniqedList)
 endfunction
-
-function! GitStatus()
-  let [a,m,r] = GitGutterGetHunkSummary()
-  return printf('+%d ~%d -%d', a, m, r)
-endfunction
-" set statusline+=%{GitStatus()}
-
-let g:vim_yaml_helper#auto_display_path = 0
-
-
-

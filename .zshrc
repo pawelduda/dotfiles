@@ -14,7 +14,7 @@ export BAT_THEME=gruvbox-dark
 # fi
 
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/dudev/.oh-my-zsh
+export ZSH=/Users/pawel.kolonkoduda/.oh-my-zsh
 
 function manswitch() { man $1 | less -p "$2"; }
 
@@ -137,7 +137,7 @@ function git_checkout_master_rails() (
 )
 alias gcm_rails=git_checkout_master_rails
 
-export EDITOR=/Users/dudev/nvim-macos/bin/nvim
+export EDITOR=/Users/pawel.kolonkoduda/nvim-macos/bin/nvim
 # export EDITOR="~/nvim-macos/bin/nvim"
 alias nvim="~/nvim-macos/bin/nvim"
 alias vim_diesel="TERM='' nvim"
@@ -301,7 +301,7 @@ alias unmute3='pactl set-sink-mute 3 0'
 alias subscribe-to-audio-events='pactl subscribe'
 
 _backup_prepare () {
-  export $(sudo cat /Users/dudev/.restic_cron_creds | xargs)
+  export $(sudo cat /Users/pawel.kolonkoduda/.restic_cron_creds | xargs)
 }
 
 _backup_remove_old_snapshots () {
@@ -396,7 +396,7 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 autoload -U +X bashcompinit && bashcompinit
 
 # Created by `pipx` on 2021-08-31 09:52:32
-export PATH="$PATH:/Users/dudev/.local/bin"
+export PATH="$PATH:/Users/pawel.kolonkoduda/.local/bin"
 
 precmd() { print "" }
 
